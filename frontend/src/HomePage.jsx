@@ -1,5 +1,6 @@
 import React from "react";
 import "./HomePage.css";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
   const categories = [
@@ -45,12 +46,11 @@ export default function HomePage() {
           </p>
           <div className="search-bar">
             <div className="search-input-wrapper">
-              <span className="search-icon">🔍</span>
-              <input 
-                type="text" 
+
+              import { useNavigate } from "react-router-dom";
                 placeholder="What service are you looking for?" 
                 className="search-input"
-              />
+              
             </div>
             <button className="search-button">Search</button>
           </div>
@@ -58,12 +58,14 @@ export default function HomePage() {
             <div className="stat">
               <span className="stat-number">10K+</span>
               <span className="stat-label">Active Users</span>
+
+                const navigate = useNavigate();
             </div>
             <div className="stat">
               <span className="stat-number">500+</span>
               <span className="stat-label">Service Providers</span>
-            </div>
-            <div className="stat">
+                          <button className="btn-login" onClick={() => navigate("/login")}>Login</button>
+                          <button className="btn-register" onClick={() => navigate("/register")}>Register</button>
               <span className="stat-number">50K+</span>
               <span className="stat-label">Bookings Made</span>
             </div>
@@ -74,8 +76,8 @@ export default function HomePage() {
       {/* Featured Categories */}
       <section className="featured-section" id="services">
         <div className="section-container">
-          <h2 className="section-title">Popular Categories</h2>
-          <p className="section-subtitle">Explore our wide range of services</p>
+                          <button className="btn-login" onClick={() => navigate("/login")}>Login</button>
+                          <button className="btn-register" onClick={() => navigate("/register")}>Register</button>
           <div className="categories-grid">
             {categories.map((category, index) => (
               <div 
@@ -101,20 +103,20 @@ export default function HomePage() {
             <div className="step-card">
               <div className="step-number">1</div>
               <div className="step-icon">🔍</div>
-              <h3 className="step-title">Search Service</h3>
-              <p className="step-description">
-                Browse through our categories or search for the specific service you need
-              </p>
-            </div>
-            <div className="step-card">
-              <div className="step-number">2</div>
-              <div className="step-icon">📅</div>
-              <h3 className="step-title">Book Appointment</h3>
-              <p className="step-description">
-                Choose your preferred time slot and confirm your booking instantly
-              </p>
-            </div>
-            <div className="step-card">
+                        <div className="hero-stats">
+                          <div className="stat">
+                            <span className="stat-number">10K+</span>
+                            <span className="stat-label">Active Users</span>
+                          </div>
+                          <div className="stat">
+                            <span className="stat-number">500+</span>
+                            <span className="stat-label">Service Providers</span>
+                          </div>
+                          <div className="stat">
+                            <span className="stat-number">50K+</span>
+                            <span className="stat-label">Bookings Made</span>
+                          </div>
+                        </div>
               <div className="step-number">3</div>
               <div className="step-icon">✅</div>
               <h3 className="step-title">Get Confirmation</h3>
