@@ -1,3 +1,4 @@
 *.json
 *.mts
 /node_modules
+.env
