@@ -11,6 +11,9 @@ function Badge({ className, variant = "default", ...props }: BadgeProps) {
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground border border-input",
+        success: "border-transparent bg-success text-success-foreground hover:bg-success/80",
+        warning: "border-transparent bg-warning text-warning-foreground hover:bg-warning/80",
+
     }
 
     return (
