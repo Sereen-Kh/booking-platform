@@ -1,0 +1,61 @@
+import asyncio
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.database import SessionLocal, engine, Base
+from app.models.user import User, UserRole
+from app.models.service import Service, Category
+from app.models.provider import ProviderProfile
+from app.core.security import get_password_hash
+
+async def seed():
+    async with SessionLocal() as db:
+        # 1. Create Categories
+        categories = [
+            Category(name="Cleaning", description="Home and office cleaning services"),
+            Category(name="Plumbing", description="Professional plumbing and pipe repair"),
+            Category(name="Photography", description="Events, portraits, and commercial photography"),
+            Category(name="Wellness", description="Yoga, massage, and personal training"),
+        ]
+        db.add_all(categories)
+        await db.commit()
+        
+        # 2. Create Providers
+        provider_data = [
+            {"email": "alice@cleaning.com", "name": "Alice Smith", "biz": "Sparkle Clean", "cat_idx": 0},
+            {"email": "bob@plumbing.com", "name": "Bob Jones", "biz": "Quick Fix Plumbing", "cat_idx": 1},
+            {"email": "charlie@photo.com", "name": "Charlie Brown", "biz": "Golden Hour Studios", "cat_idx": 2},
+        ]
+        
+        for data in provider_data:
+            user = User(
+                email=data["email"],
+                hashed_password=get_password_hash("password123"),
+                full_name=data["name"],
+                role=UserRole.PROVIDER
+            )
+            db.add(user)
+            await db.flush()
+            
+            profile = ProviderProfile(
+                user_id=user.id,
+                business_name=data["biz"],
+                bio=f"Top rated professional in {categories[data['cat_idx']].name}",
+                location="San Francisco, CA",
+                availability={"mon": "09:00-17:00", "tue": "09:00-17:00"}
+            )
+            db.add(profile)
+            
+            service = Service(
+                name=f"Deluxe {categories[data['cat_idx']].name} Package",
+                description=f"High quality {categories[data['cat_idx']].name.lower()} service by {data['biz']}.",
+                price=99.0 + (data['cat_idx'] * 50),
+                duration_minutes=60,
+                category_id=categories[data['cat_idx']].id,
+                provider_id=user.id
+            )
+            db.add(service)
+
+        await db.commit()
+        print("Database seeded successfully!")
+
+if __name__ == "__main__":
+    asyncio.run(seed())

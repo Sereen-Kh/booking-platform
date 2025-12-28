@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from ..database import Base
+from .booking import Booking
+from .review import Review
 
 class Category(Base):
     __tablename__ = "categories"
@@ -25,3 +27,4 @@ class Service(Base):
     category = relationship("Category", back_populates="services")
     provider = relationship("User")
     bookings = relationship("Booking", back_populates="service")
+    reviews = relationship("Review", back_populates="service")

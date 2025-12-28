@@ -3,6 +3,8 @@ import "./HomePage.css";
 import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
+  const navigate = useNavigate();
+  
   const categories = [
     { name: "Hair & Beauty", icon: "✂️", color: "#FF6B9D" },
     { name: "Home Services", icon: "🏠", color: "#4ECDC4" },
@@ -27,8 +29,8 @@ export default function HomePage() {
             <a href="#about">About</a>
           </div>
           <div className="auth-buttons">
-            <button className="btn-login">Login</button>
-            <button className="btn-register">Register</button>
+            <button className="btn-login" onClick={() => navigate("/login")}>Login</button>
+            <button className="btn-register" onClick={() => navigate("/register")}>Register</button>
           </div>
         </div>
       </nav>
@@ -46,11 +48,12 @@ export default function HomePage() {
           </p>
           <div className="search-bar">
             <div className="search-input-wrapper">
-
-              import { useNavigate } from "react-router-dom";
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
                 placeholder="What service are you looking for?" 
                 className="search-input"
-              
+              />
             </div>
             <button className="search-button">Search</button>
           </div>
@@ -58,14 +61,12 @@ export default function HomePage() {
             <div className="stat">
               <span className="stat-number">10K+</span>
               <span className="stat-label">Active Users</span>
-
-                const navigate = useNavigate();
             </div>
             <div className="stat">
               <span className="stat-number">500+</span>
               <span className="stat-label">Service Providers</span>
-                          <button className="btn-login" onClick={() => navigate("/login")}>Login</button>
-                          <button className="btn-register" onClick={() => navigate("/register")}>Register</button>
+            </div>
+            <div className="stat">
               <span className="stat-number">50K+</span>
               <span className="stat-label">Bookings Made</span>
             </div>
@@ -76,8 +77,8 @@ export default function HomePage() {
       {/* Featured Categories */}
       <section className="featured-section" id="services">
         <div className="section-container">
-                          <button className="btn-login" onClick={() => navigate("/login")}>Login</button>
-                          <button className="btn-register" onClick={() => navigate("/register")}>Register</button>
+          <h2 className="section-title">Popular Services</h2>
+          <p className="section-subtitle">Browse our most requested services</p>
           <div className="categories-grid">
             {categories.map((category, index) => (
               <div 
@@ -103,20 +104,20 @@ export default function HomePage() {
             <div className="step-card">
               <div className="step-number">1</div>
               <div className="step-icon">🔍</div>
-                        <div className="hero-stats">
-                          <div className="stat">
-                            <span className="stat-number">10K+</span>
-                            <span className="stat-label">Active Users</span>
-                          </div>
-                          <div className="stat">
-                            <span className="stat-number">500+</span>
-                            <span className="stat-label">Service Providers</span>
-                          </div>
-                          <div className="stat">
-                            <span className="stat-number">50K+</span>
-                            <span className="stat-label">Bookings Made</span>
-                          </div>
-                        </div>
+              <h3 className="step-title">Search Services</h3>
+              <p className="step-description">
+                Find the perfect service provider in your area
+              </p>
+            </div>
+            <div className="step-card">
+              <div className="step-number">2</div>
+              <div className="step-icon">📅</div>
+              <h3 className="step-title">Book Appointment</h3>
+              <p className="step-description">
+                Choose a convenient time slot that works for you
+              </p>
+            </div>
+            <div className="step-card">
               <div className="step-number">3</div>
               <div className="step-icon">✅</div>
               <h3 className="step-title">Get Confirmation</h3>
