@@ -90,6 +90,28 @@ export const authAPI = {
   getCurrentUser: async () => {
     return apiRequest("/auth/me");
   },
+
+  // Login with Google OAuth token
+  loginWithGoogle: async (googleToken) => {
+    const response = await fetch(`${API_BASE_URL}/auth/google`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token: googleToken }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "Google login failed");
+    }
+
+    // Store token in localStorage
+    localStorage.setItem("access_token", data.access_token);
+
+    return data;
+  },
 };
 
 // You can add more API modules here as needed
