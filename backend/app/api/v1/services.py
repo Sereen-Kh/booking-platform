@@ -16,6 +16,26 @@ from .auth import get_current_user
 router = APIRouter()
 
 
+@router.get("/categories", response_model=List[CategorySchema])
+async def list_categories(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Category))
+    return result.scalars().all()
+
+
+@router.get("/recommended", response_model=List[ServiceSchema])
+async def get_recommended_services(
+    limit: int = Query(6, ge=1, le=20),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get recommended/popular services for the home page"""
+    # For now, return random services. Later implement based on
+    # popularity, ratings, etc.
+    query = select(Service).options(selectinload(
+        Service.provider)).order_by(func.random()).limit(limit)
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
 @router.get("/", response_model=List[ServiceSchema])
 async def list_services(
     skip: int = Query(0, ge=0),
@@ -44,38 +64,6 @@ async def list_services(
     return result.scalars().all()
 
 
-@router.get("/{service_id}", response_model=ServiceSchema)
-async def get_service(service_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
-        select(Service)
-        .where(Service.id == service_id)
-        .options(selectinload(Service.provider))
-    )
-    service = result.scalar_one_or_none()
-    if not service:
-        raise HTTPException(status_code=404, detail="Service not found")
-    return service
-
-
-@router.get("/categories", response_model=List[CategorySchema])
-async def list_categories(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Category))
-    return result.scalars().all()
-
-
-@router.get("/recommended", response_model=List[ServiceSchema])
-async def get_recommended_services(
-    limit: int = Query(6, ge=1, le=20),
-    db: AsyncSession = Depends(get_db)
-):
-    """Get recommended/popular services for the home page"""
-    # For now, return random services. Later implement based on
-    # popularity, ratings, etc.
-    query = select(Service).options(selectinload(Service.provider)).order_by(func.random()).limit(limit)
-    result = await db.execute(query)
-    return result.scalars().all()
-
-
 @router.get("/provider/my-services", response_model=List[ServiceSchema])
 async def get_provider_services(
     db: AsyncSession = Depends(get_db),
@@ -93,13 +81,27 @@ async def get_provider_services(
     return result.scalars().all()
 
 
+@router.get("/{service_id}", response_model=ServiceSchema)
+async def get_service(service_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(Service)
+        .where(Service.id == service_id)
+        .options(selectinload(Service.provider))
+    )
+    service = result.scalar_one_or_none()
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return service
+
+
 @router.get("/by-provider/{provider_id}", response_model=List[ServiceSchema])
 async def get_services_by_provider(
     provider_id: int,
     db: AsyncSession = Depends(get_db)
 ):
     """Get all services from a specific provider (publicly)"""
-    query = select(Service).where(Service.provider_id == provider_id).options(selectinload(Service.provider))
+    query = select(Service).where(Service.provider_id ==
+                                  provider_id).options(selectinload(Service.provider))
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -136,16 +138,18 @@ async def update_provider_service(
 ):
     """Update an existing service for the current provider"""
     result = await db.execute(
-        select(Service).where(Service.id == service_id, Service.provider_id == current_user.id)
+        select(Service).where(Service.id == service_id,
+                              Service.provider_id == current_user.id)
     )
     db_service = result.scalar_one_or_none()
-    
+
     if not db_service:
-        raise HTTPException(status_code=404, detail="Service not found or access denied")
-        
+        raise HTTPException(
+            status_code=404, detail="Service not found or access denied")
+
     for key, value in service_data.model_dump().items():
         setattr(db_service, key, value)
-        
+
     await db.commit()
     await db.refresh(db_service)
     return db_service
@@ -159,13 +163,15 @@ async def delete_provider_service(
 ):
     """Delete a service for the current provider"""
     result = await db.execute(
-        select(Service).where(Service.id == service_id, Service.provider_id == current_user.id)
+        select(Service).where(Service.id == service_id,
+                              Service.provider_id == current_user.id)
     )
     db_service = result.scalar_one_or_none()
-    
+
     if not db_service:
-        raise HTTPException(status_code=404, detail="Service not found or access denied")
-        
+        raise HTTPException(
+            status_code=404, detail="Service not found or access denied")
+
     await db.delete(db_service)
     await db.commit()
     return {"message": "Service deleted successfully"}

@@ -40,9 +40,11 @@ export default function Navbar() {
     <nav className={navbarClasses}>
       <div className="container px-4 h-14 flex items-center justify-between">
         <Link to="/" className={logoClasses}>
-          <div className={`p-1.5 rounded-lg transition-colors ${isScrolled || !isLandingPage ? 'bg-primary text-primary-foreground' : 'bg-white text-primary'}`}>
-            <Calendar className="w-5 h-5" />
-          </div>
+          <img 
+            src="/bookit-monogram.svg" 
+            alt="BookIt Logo" 
+            className="w-8 h-8 rounded-lg"
+          />
           <span>BookIt</span>
         </Link>
 

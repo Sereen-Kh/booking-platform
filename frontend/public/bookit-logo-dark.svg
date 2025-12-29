@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg viewBox="0 0 200 200"
+     xmlns="http://www.w3.org/2000/svg"
+     width="200"
+     height="200">
+    <!-- Dark mode version with white calendar and gold accent -->
+    <!-- Calendar body (white for dark background) -->
+    <rect x="40"
+          y="50"
+          width="120"
+          height="110"
+          rx="12"
+          ry="12"
+          fill="white"
+          opacity="0.95" />
+    <!-- Calendar top bar (light gray) -->
+    <rect x="40"
+          y="50"
+          width="120"
+          height="30"
+          rx="12"
+          ry="12"
+          fill="rgba(255,255,255,0.85)" />
+    <!-- Calendar holes -->
+    <circle cx="60"
+            cy="40"
+            r="6"
+            fill="white"
+            stroke="white"
+            stroke-width="2" />
+    <circle cx="140"
+            cy="40"
+            r="6"
+            fill="white"
+            stroke="white"
+            stroke-width="2" />
+    <!-- Grid lines -->
+    <line x1="55"
+          y1="85"
+          x2="145"
+          y2="85"
+          stroke="#1D4ED8"
+          stroke-width="1"
+          opacity="0.2" />
+    <line x1="55"
+          y1="105"
+          x2="145"
+          y2="105"
+          stroke="#1D4ED8"
+          stroke-width="1"
+          opacity="0.2" />
+    <line x1="55"
+          y1="125"
+          x2="145"
+          y2="125"
+          stroke="#1D4ED8"
+          stroke-width="1"
+          opacity="0.2" />
+    <line x1="75"
+          y1="85"
+          x2="75"
+          y2="145"
+          stroke="#1D4ED8"
+          stroke-width="1"
+          opacity="0.15" />
+    <line x1="95"
+          y1="85"
+          x2="95"
+          y2="145"
+          stroke="#1D4ED8"
+          stroke-width="1"
+          opacity="0.15" />
+    <line x1="115"
+          y1="85"
+          x2="115"
+          y2="145"
+          stroke="#1D4ED8"
+          stroke-width="1"
+          opacity="0.15" />
+    <line x1="135"
+          y1="85"
+          x2="135"
+          y2="145"
+          stroke="#1D4ED8"
+          stroke-width="1"
+          opacity="0.15" />
+    <!-- Checkmark (gold) -->
+    <g transform="translate(100, 105)">
+        <path d="M -20 0 L -5 15 L 25 -15"
+              stroke="#FBBF24"
+              stroke-width="8"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              opacity="0.95" />
+    </g>
+</svg>
