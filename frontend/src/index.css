@@ -59,57 +59,54 @@
 
 @layer base {
   :root {
-    /* Neutral Base: Cool Slate */
-    --background: 210 40% 98%;
-    /* #F8FAFC - Slate 50 */
+    /* Neutral Base: Pure White & Deep Slate */
+    --background: 0 0% 100%;
+    /* #FFFFFF */
     --foreground: 222 47% 11%;
-    /* #0F172A - Slate 900 */
+    /* #0F172A */
 
     --card: 0 0% 100%;
-    /* #FFFFFF */
     --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary: Blue 600 */
-    --primary: 221 83% 53%;
-    /* #2563EB */
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Royal Blue (Airbnb/Booking.com style) */
+    --primary: 224 76% 48%;
+    /* #1D4ED8 */
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary: Indigo 500 */
-    --secondary: 239 84% 67%;
-    /* #6366F1 */
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary: Soft Grayish Blue */
+    --secondary: 214 32% 91%;
+    /* #E2E8F0 */
+    --secondary-foreground: 222 47% 11%;
 
-    /* Muted: Slate 400 */
+    /* Muted: Slate 100 */
     --muted: 210 40% 96.1%;
     --muted-foreground: 215 16% 47%;
 
-    /* Accent: Emerald 500 */
-    --accent: 151 84% 48%;
-    /* #10B981 */
-    --accent-foreground: 210 40% 98%;
+    /* Accent: Gold/Amber (Luxury feel) */
+    --accent: 43 96% 56%;
+    /* #FBBF24 */
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    /* Success: Emerald 500 (Same as Accent) */
+    /* Success: Emerald */
     --success: 142 71% 45%;
     --success-foreground: 210 40% 98%;
 
-    /* Warning: Amber 500 */
+    /* Warning: Amber */
     --warning: 38 92% 50%;
     --warning-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
-    /* Slate 200 */
     --input: 214.3 31.8% 91.4%;
-    --ring: 221 83% 53%;
-    /* Primary Blue */
+    --ring: 224 76% 48%;
 
-    --radius: 0.5rem;
-    /* 8px - Modern, slightly rounded */
+    --radius: 0.75rem;
+    /* 12px - Modern, friendly */
   }
 
   .dark {

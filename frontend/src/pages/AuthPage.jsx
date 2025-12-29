@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate, Link } from 'react-router-dom';
 import { servicesAPI } from '@/utils/api';
+import { User, ShieldCheck } from 'lucide-react';
 
 export default function AuthPage({ mode = 'login' }) {
     const [email, setEmail] = useState('');
@@ -47,15 +48,24 @@ export default function AuthPage({ mode = 'login' }) {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background p-4 transition-colors">
-            <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="min-h-screen flex items-center justify-center bg-background p-4 transition-colors relative overflow-hidden">
+            {/* Background Decoration */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+                <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-3xl" />
+                <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-blue-500/5 blur-3xl" />
+            </div>
+
+            <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 {/* Auth Form */}
-                <Card className="w-full border border-border shadow-2xl rounded-3xl overflow-hidden bg-card transition-colors">
-                    <CardHeader className="space-y-1 pb-8 text-center bg-gradient-to-b from-muted/50 to-card pt-10">
-                        <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
+                <Card className="w-full border border-border/50 shadow-2xl rounded-3xl overflow-hidden bg-white/80 backdrop-blur-xl transition-all duration-500 hover:shadow-primary/5">
+                    <CardHeader className="space-y-1 pb-8 text-center bg-gradient-to-b from-primary/5 to-transparent pt-10">
+                        <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary animate-in zoom-in duration-500">
+                            {mode === 'login' ? <User className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
+                        </div>
+                        <CardTitle className="text-3xl font-bold tracking-tight text-foreground font-heading">
                             {mode === 'login' ? 'Welcome back' : 'Create account'}
                         </CardTitle>
-                        <CardDescription className="text-muted-foreground">
+                        <CardDescription className="text-muted-foreground text-base">
                             {mode === 'login'
                                 ? 'Enter your credentials to access your account'
                                 : 'Enter your details to start booking expert services'}

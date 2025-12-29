@@ -40,11 +40,7 @@ function App() {
                     <Profile />
                   </ProtectedRoute>
                 } />
-                <Route path="/services" element={
-                  <ProtectedRoute>
-                    <ServicesPage />
-                  </ProtectedRoute>
-                } />
+                <Route path="/services" element={<ServicesPage />} />
                 <Route path="/services/:id" element={<ServiceDetailPage />} />
                 <Route path="/favorites" element={
                   <ProtectedRoute>

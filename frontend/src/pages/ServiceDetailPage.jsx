@@ -90,8 +90,13 @@ export default function ServiceDetailPage() {
     const isFree = service.price === 0;
 
     return (
-        <div className="bg-background min-h-screen transition-colors">
-            <div className="container px-4 py-12 max-w-6xl">
+        <div className="bg-background min-h-screen transition-colors relative overflow-hidden">
+            {/* Background Decoration */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+                <div className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full bg-primary/5 blur-3xl opacity-50" />
+            </div>
+
+            <div className="container px-4 py-12 max-w-6xl relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                     <div className="lg:col-span-2 space-y-8">
                         <div className="space-y-4">
