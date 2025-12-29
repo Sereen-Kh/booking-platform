@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from datetime import timedelta
 from jose import JWTError, jwt
+from pydantic import BaseModel
 from ...database import get_db
 from ...models.user import User
 from ...schemas.user import Token, UserCreate, User as UserSchema
@@ -13,6 +14,7 @@ from ...core.security import (
     create_access_token,
 )
 from ...core.config import settings
+import httpx
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(
@@ -104,3 +106,70 @@ async def get_current_user_info(
 ):
     """Get current logged in user information"""
     return current_user
+
+
+class GoogleTokenRequest(BaseModel):
+    token: str
+
+
+class GoogleTokenInfo(BaseModel):
+    email: str
+    name: str
+    picture: str | None = None
+
+
+async def verify_google_token(token: str) -> GoogleTokenInfo:
+    """Verify Google OAuth token and return user info"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "https://www.googleapis.com/oauth2/v1/userinfo",
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=10.0,
+            )
+            response.raise_for_status()
+            data = response.json()
+            return GoogleTokenInfo(
+                email=data.get("email"),
+                name=data.get("name"),
+                picture=data.get("picture"),
+            )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Google token",
+        )
+
+
+@router.post("/google", response_model=Token)
+async def google_login(
+    request: GoogleTokenRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """Login with Google OAuth token"""
+    user_info = await verify_google_token(request.token)
+
+    result = await db.execute(select(User).where(User.email == user_info.email))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        user = User(
+            email=user_info.email,
+            full_name=user_info.name or user_info.email,
+            hashed_password=get_password_hash(
+                f"google_oauth_{user_info.email}"
+            ),
+            role="CUSTOMER",
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+
+    access_token_expires = timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
+    access_token = create_access_token(
+        data={"sub": user.email, "role": user.role},
+        expires_delta=access_token_expires,
+    )
+    return {"access_token": access_token, "token_type": "bearer"}

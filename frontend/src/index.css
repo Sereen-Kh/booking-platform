@@ -71,24 +71,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary: Royal Blue (Airbnb/Booking.com style) */
-    --primary: 224 76% 48%;
-    /* #1D4ED8 */
+    /* Primary: Vibrant Teal (Calendly/Square Appointments style) */
+    --primary: 168 78% 55%;
+    /* #14B8A6 */
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary: Soft Grayish Blue */
-    --secondary: 214 32% 91%;
-    /* #E2E8F0 */
+    /* Secondary: Soft Gray-Blue */
+    --secondary: 210 40% 96.1%;
+    /* #F8FAFC */
     --secondary-foreground: 222 47% 11%;
 
     /* Muted: Slate 100 */
     --muted: 210 40% 96.1%;
     --muted-foreground: 215 16% 47%;
 
-    /* Accent: Gold/Amber (Luxury feel) */
-    --accent: 43 96% 56%;
-    /* #FBBF24 */
-    --accent-foreground: 222 47% 11%;
+    /* Accent: Warm Coral */
+    --accent: 8 100% 63.5%;
+    /* #FF6B5B */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -103,7 +103,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 224 76% 48%;
+    --ring: 168 78% 55%;
 
     --radius: 0.75rem;
     /* 12px - Modern, friendly */
@@ -122,9 +122,9 @@
     --popover: 222 47% 6%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary: Blue 500 (Lighter) */
-    --primary: 217 91% 60%;
-    /* #3B82F6 */
+    /* Primary: Bright Teal */
+    --primary: 168 85% 58%;
+    /* #20C997 */
     --primary-foreground: 222 47% 4%;
 
     /* Secondary: Slate 800 */
@@ -135,9 +135,9 @@
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
 
-    /* Accent: Cyan */
-    --accent: 188 78% 54%;
-    /* #22D3EE */
+    /* Accent: Warm Coral */
+    --accent: 8 95% 62%;
+    /* #FF7854 */
     --accent-foreground: 222 47% 4%;
 
     --destructive: 0 62.8% 30.6%;
@@ -152,7 +152,7 @@
     --border: 217 33% 17%;
     /* Slate 800 */
     --input: 217 33% 17%;
-    --ring: 217 91% 60%;
+    --ring: 168 85% 58%;
   }
 }
 
@@ -179,6 +179,10 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), 0 20px 40px rgba(0, 0, 0, 0.04);
   }
 
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(20, 184, 166, 0.15);
+  }
+
   /* Simple Animation Utilities to replace tailwindcss-animate */
   .animate-in {
     animation-duration: 0.5s;
@@ -196,6 +200,18 @@
 
   .zoom-in-95 {
     animation-name: zoomIn;
+  }
+
+  .pulse-subtle {
+    animation: pulseSubtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .slide-up {
+    animation: slideUp 0.6s ease-out;
   }
 
   @keyframes fadeIn {
@@ -229,6 +245,38 @@
     to {
       transform: scale(1);
       opacity: 1;
+    }
+  }
+
+  @keyframes pulseSubtle {
+    0%, 100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }

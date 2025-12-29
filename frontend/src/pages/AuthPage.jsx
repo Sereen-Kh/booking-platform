@@ -5,21 +5,31 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate, Link } from 'react-router-dom';
 import { servicesAPI } from '@/utils/api';
-import { User, ShieldCheck } from 'lucide-react';
+import { User, ShieldCheck, Chrome } from 'lucide-react';
 
 export default function AuthPage({ mode = 'login' }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [isProvider, setIsProvider] = useState(false);
-    const { login, register } = useAuth();
+    const { login, register, loginWithGoogle } = useAuth();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
     const [recommendedServices, setRecommendedServices] = useState([]);
 
     useEffect(() => {
         loadRecommendedServices();
+        loadGoogleSDK();
     }, []);
+
+    const loadGoogleSDK = () => {
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+    };
 
     const loadRecommendedServices = async () => {
         try {
@@ -27,6 +37,18 @@ export default function AuthPage({ mode = 'login' }) {
             setRecommendedServices(data);
         } catch (err) {
             console.error("Failed to load recommended services", err);
+        }
+    };
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        setIsGoogleLoading(true);
+        try {
+            await loginWithGoogle(credentialResponse.credential);
+            navigate('/dashboard');
+        } catch (error) {
+            alert(error.message || 'Google login failed');
+        } finally {
+            setIsGoogleLoading(false);
         }
     };
 
@@ -131,10 +153,41 @@ export default function AuthPage({ mode = 'login' }) {
                             <Button
                                 className="w-full h-12 rounded-xl text-lg font-semibold mt-4 shadow-lg shadow-primary/20"
                                 type="submit"
-                                isLoading={isLoading}
+                                disabled={isLoading || isGoogleLoading}
                             >
-                                {mode === 'login' ? 'Sign In' : 'Sign Up'}
+                                {isLoading ? 'Loading...' : (mode === 'login' ? 'Sign In' : 'Sign Up')}
                             </Button>
+
+                            <div className="relative my-6">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-border"></div>
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="px-2 bg-white text-muted-foreground font-medium">Or continue with</span>
+                                </div>
+                            </div>
+
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full h-12 rounded-xl text-base font-semibold border-border hover:bg-muted/50"
+                                onClick={() => {
+                                    setIsGoogleLoading(true);
+                                    window.google?.accounts?.id?.initialize?.({
+                                        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+                                        callback: handleGoogleSuccess,
+                                    });
+                                    window.google?.accounts?.id?.renderButton(
+                                        document.getElementById('google-signin-button'),
+                                        { theme: 'outline', size: 'large', width: '100%' }
+                                    );
+                                }}
+                                disabled={isGoogleLoading}
+                            >
+                                <Chrome className="w-5 h-5 mr-2" />
+                                {isGoogleLoading ? 'Signing in...' : 'Google'}
+                            </Button>
+                            <div id="google-signin-button" className="hidden"></div>
                         </form>
                     </CardContent>
                     <CardFooter className="bg-muted/30 px-8 py-6 border-t border-border flex justify-center">

@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { Calendar, Clock, Star, MapPin, ShieldCheck, Heart } from 'lucide-react';
+import BookingCalendar from '@/components/BookingCalendar';
+import TimeSlotPicker from '@/components/TimeSlotPicker';
 
 export default function ServiceDetailPage() {
     const { id } = useParams();
@@ -16,7 +18,8 @@ export default function ServiceDetailPage() {
     const [service, setService] = useState(null);
     const [loading, setLoading] = useState(true);
     const [bookingLoading, setBookingLoading] = useState(false);
-    const [selectedDate, setSelectedDate] = useState('');
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedTime, setSelectedTime] = useState(null);
 
     useEffect(() => {
         const fetchService = async () => {
@@ -38,14 +41,14 @@ export default function ServiceDetailPage() {
             return;
         }
 
-        if (!selectedDate) {
+        if (!selectedTime) {
             alert('Please select a date and time');
             return;
         }
 
         setBookingLoading(true);
         try {
-            const result = await paymentsAPI.createCheckout(service.id, selectedDate);
+            const result = await paymentsAPI.createCheckout(service.id, selectedTime.toISOString());
 
             if (result.type === 'free') {
                 // Free service - booking created directly
@@ -185,16 +188,26 @@ export default function ServiceDetailPage() {
                                     {!isFree && <span className="text-muted-foreground/60 text-sm">/ session</span>}
                                 </div>
                             </CardHeader>
-                            <CardContent className="p-6 space-y-6">
+                            <CardContent className="p-6 space-y-6 max-h-96 overflow-y-auto">
                                 <div className="space-y-4">
-                                    <h3 className="font-bold text-foreground">Select Date & Time</h3>
-                                    <input
-                                        type="datetime-local"
-                                        value={selectedDate}
-                                        onChange={(e) => setSelectedDate(e.target.value)}
-                                        className="w-full p-3 bg-muted/50 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                    <h3 className="font-bold text-foreground text-lg">Select Date</h3>
+                                    <BookingCalendar
+                                        onDateSelect={setSelectedDate}
+                                        selectedDate={selectedDate}
                                     />
                                 </div>
+
+                                {selectedDate && (
+                                    <div className="space-y-4 border-t border-border pt-6">
+                                        <h3 className="font-bold text-foreground text-lg">Select Time</h3>
+                                        <TimeSlotPicker
+                                            onTimeSelect={setSelectedTime}
+                                            selectedTime={selectedTime}
+                                            duration={service.duration_minutes}
+                                            selectedDate={selectedDate}
+                                        />
+                                    </div>
+                                )}
 
                                 <div className="space-y-2 py-4 border-y border-border">
                                     <div className="flex justify-between text-sm">

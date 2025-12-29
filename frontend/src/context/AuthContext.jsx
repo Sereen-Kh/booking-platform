@@ -48,13 +48,26 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const loginWithGoogle = async (googleToken) => {
+    try {
+      await authAPI.loginWithGoogle(googleToken);
+      // After Google login, fetch the full user profile
+      const userData = await authAPI.getCurrentUser();
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      console.error("Google login failed:", error);
+      throw error;
+    }
+  }
+
   const logout = () => {
     authAPI.logout();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isActive: !!user, loading }}>
+    <AuthContext.Provider value={{ user, login, register, loginWithGoogle, logout, isActive: !!user, loading }}>
       {children}
     </AuthContext.Provider>
   );
