@@ -23,6 +23,7 @@ class Service(Base):
     duration_minutes = Column(Integer, nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id"))
     provider_id = Column(Integer, ForeignKey("users.id"))
+    image_url = Column(String, nullable=True)
 
     category = relationship("Category", back_populates="services")
     provider = relationship("User")

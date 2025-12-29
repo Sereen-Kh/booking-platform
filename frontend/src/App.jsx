@@ -14,6 +14,7 @@ import Dashboard from './Dashboard';
 import Profile from './Profile';
 import ServicesPage from './pages/ServicesPage';
 import ServicesManagement from './pages/ServicesManagement';
+import ProviderProfilePage from './pages/ProviderProfilePage';
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
                     <ServicesManagement />
                   </ProtectedRoute>
                 } />
+                <Route path="/provider/:userId" element={<ProviderProfilePage />} />
                 <Route path="/booking/success" element={<BookingSuccessPage />} />
                 <Route path="/booking/cancel" element={<BookingCancelPage />} />
               </Routes>

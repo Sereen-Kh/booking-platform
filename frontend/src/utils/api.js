@@ -116,6 +116,22 @@ export const servicesAPI = {
       body: JSON.stringify(serviceData),
     });
   },
+
+  updateProviderService: async (id, serviceData) => {
+    return apiRequest(`/services/provider/my-services/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(serviceData),
+    });
+  },
+
+  deleteProviderService: async (id) => {
+    return apiRequest(`/services/provider/my-services/${id}`, {
+      method: "DELETE",
+    });
+  },
+  getByProvider: async (providerId) => {
+    return apiRequest(`/services/by-provider/${providerId}`);
+  },
 };
 
 export const bookingsAPI = {
@@ -128,6 +144,12 @@ export const bookingsAPI = {
 
   getUserBookings: async () => {
     return apiRequest("/bookings/my-bookings");
+  },
+};
+
+export const providersAPI = {
+  getProfileByUserId: async (userId) => {
+    return apiRequest(`/providers/by-user/${userId}`);
   },
 };
 
@@ -165,4 +187,4 @@ export const paymentsAPI = {
   },
 };
 
-export default { authAPI, servicesAPI, bookingsAPI, favoritesAPI, paymentsAPI };
+export default { authAPI, servicesAPI, bookingsAPI, favoritesAPI, paymentsAPI, providersAPI };

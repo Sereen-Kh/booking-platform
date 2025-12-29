@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
+from .user import User as UserSchema
 
 class CategoryBase(BaseModel):
     name: str
@@ -20,6 +21,7 @@ class ServiceBase(BaseModel):
     price: float
     duration_minutes: int
     category_id: int
+    image_url: Optional[str] = None
 
 class ServiceCreate(ServiceBase):
     pass
@@ -27,6 +29,7 @@ class ServiceCreate(ServiceBase):
 class Service(ServiceBase):
     id: int
     provider_id: int
+    provider: Optional[UserSchema] = None
     
     class Config:
         from_attributes = True

@@ -38,3 +38,22 @@ async def get_provider(provider_id: int, db: AsyncSession = Depends(get_db)):
     if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
     return provider
+
+@router.get("/by-user/{user_id}")
+async def get_provider_by_user_id(user_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ProviderProfile).where(ProviderProfile.user_id == user_id).join(User))
+    profile = result.scalar_one_or_none()
+    
+    # If no profile exists, return a basic one from User info
+    if not profile:
+        result = await db.execute(select(User).where(User.id == user_id))
+        user = result.scalar_one_or_none()
+        if not user:
+             raise HTTPException(status_code=404, detail="User not found")
+        return {
+            "user_id": user.id,
+            "business_name": user.full_name,
+            "bio": "Expert Service Provider",
+            "location": "Global"
+        }
+    return profile

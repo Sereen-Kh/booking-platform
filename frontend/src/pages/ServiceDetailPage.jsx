@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { servicesAPI, paymentsAPI } from '@/utils/api';
 import { useFavorites } from '@/context/FavoritesContext';
 import { Button } from '@/components/ui/button';
@@ -100,8 +100,8 @@ export default function ServiceDetailPage() {
                                 <button
                                     onClick={handleFavoriteClick}
                                     className={`p-3 rounded-full shadow-sm transition-all hover:scale-110 ${isFavorite(service.id)
-                                            ? 'bg-red-500 text-white'
-                                            : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+                                        ? 'bg-red-500 text-white'
+                                        : 'bg-muted hover:bg-muted/80 text-muted-foreground'
                                         }`}
                                 >
                                     <Heart className={`w-5 h-5 ${isFavorite(service.id) ? 'fill-current' : ''}`} />
@@ -118,13 +118,34 @@ export default function ServiceDetailPage() {
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                                    <span className="text-emerald-600 font-medium">Verified Provider</span>
+                                    <span className="text-emerald-600 font-medium whitespace-nowrap">Verified Provider</span>
                                 </div>
+                                <div className="h-4 w-px bg-border mx-1 hidden sm:block"></div>
+                                <Link
+                                    to={`/provider/${service.provider_id}`}
+                                    className="flex items-center gap-2 group/provider hover:text-primary transition-colors"
+                                >
+                                    <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
+                                        {service.provider?.full_name?.[0] || 'P'}
+                                    </div>
+                                    <span className="font-semibold underline underline-offset-4 decoration-primary/30 group-hover/provider:decoration-primary">
+                                        {service.provider?.full_name || 'Expert Provider'}
+                                    </span>
+                                </Link>
                             </div>
                         </div>
 
-                        <div className="aspect-video bg-muted rounded-3xl overflow-hidden shadow-inner flex items-center justify-center text-muted-foreground/50 font-medium text-lg italic">
-                            Professional imaging of {service.name}
+                        <div className="aspect-video bg-muted rounded-3xl overflow-hidden shadow-inner flex items-center justify-center text-muted-foreground/50 font-medium text-lg italic transition-all group relative">
+                            {service.image_url ? (
+                                <img
+                                    src={service.image_url}
+                                    alt={service.name}
+                                    className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700"
+                                />
+                            ) : (
+                                `Professional imaging of ${service.name}`
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
 
                         <div className="bg-card p-8 rounded-3xl shadow-sm border border-border space-y-4 transition-colors">
@@ -183,8 +204,8 @@ export default function ServiceDetailPage() {
 
                                 <Button
                                     className={`w-full h-14 rounded-2xl text-lg font-bold shadow-lg ${isFree
-                                            ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20'
-                                            : 'shadow-primary/20'
+                                        ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20'
+                                        : 'shadow-primary/20'
                                         }`}
                                     onClick={handleBooking}
                                     disabled={bookingLoading}

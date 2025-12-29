@@ -10,6 +10,7 @@ export default function AuthPage({ mode = 'login' }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+    const [isProvider, setIsProvider] = useState(false);
     const { login, register } = useAuth();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -35,9 +36,9 @@ export default function AuthPage({ mode = 'login' }) {
             if (mode === 'login') {
                 await login(email, password);
             } else {
-                await register(name, email, password);
+                await register(name, email, password, isProvider ? 'provider' : 'customer');
             }
-            navigate('/dashboard');
+            navigate(isProvider ? '/provider/services' : '/dashboard');
         } catch (error) {
             alert(error.message);
         } finally {
@@ -103,6 +104,20 @@ export default function AuthPage({ mode = 'login' }) {
                                     required
                                 />
                             </div>
+                            {mode === 'register' && (
+                                <div className="flex items-center space-x-2 py-2">
+                                    <input
+                                        type="checkbox"
+                                        id="isProvider"
+                                        checked={isProvider}
+                                        onChange={(e) => setIsProvider(e.target.checked)}
+                                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                    />
+                                    <label htmlFor="isProvider" className="text-sm font-medium text-foreground cursor-pointer">
+                                        Join as a Service Provider
+                                    </label>
+                                </div>
+                            )}
                             <Button
                                 className="w-full h-12 rounded-xl text-lg font-semibold mt-4 shadow-lg shadow-primary/20"
                                 type="submit"
