@@ -94,8 +94,13 @@ export const authAPI = {
 
 // You can add more API modules here as needed
 export const servicesAPI = {
-  getAll: async () => {
-    return apiRequest("/services");
+  getAll: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+    if (params.providerId) searchParams.append("provider_id", params.providerId);
+    if (params.categoryId) searchParams.append("category_id", params.categoryId);
+    // Add other filters as needed
+    const queryString = searchParams.toString();
+    return apiRequest(`/services?${queryString}`);
   },
 
   getById: async (id) => {
@@ -143,7 +148,30 @@ export const bookingsAPI = {
   },
 
   getUserBookings: async () => {
-    return apiRequest("/bookings/my-bookings");
+    return apiRequest("/bookings/me");
+  },
+
+  getProviderBookings: async () => {
+    return apiRequest("/bookings/managed");
+  },
+
+  getAllBookings: async () => {
+    return apiRequest("/bookings/all");
+  },
+};
+
+export const adminAPI = {
+  getStats: async () => {
+    return apiRequest("/admin/stats");
+  },
+
+  getUsers: async (role = null) => {
+    const query = role ? `?role=${role}` : "";
+    return apiRequest(`/admin/users${query}`);
+  },
+
+  getUserDetails: async (userId) => {
+    return apiRequest(`/admin/users/${userId}`);
   },
 };
 
@@ -187,4 +215,4 @@ export const paymentsAPI = {
   },
 };
 
-export default { authAPI, servicesAPI, bookingsAPI, favoritesAPI, paymentsAPI, providersAPI };
+export default { authAPI, servicesAPI, bookingsAPI, favoritesAPI, paymentsAPI, providersAPI, adminAPI };

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .core.config import settings
-from .api.v1 import auth, services, availability, bookings, providers, reviews, favorites, payments
+from .api.v1 import auth, services, availability, bookings, providers, reviews, favorites, payments, admin
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -25,6 +25,7 @@ app.include_router(providers.router, prefix=f"{settings.API_V1_STR}/providers", 
 app.include_router(reviews.router, prefix=f"{settings.API_V1_STR}/reviews", tags=["reviews"])
 app.include_router(favorites.router, prefix=f"{settings.API_V1_STR}/favorites", tags=["favorites"])
 app.include_router(payments.router, prefix=f"{settings.API_V1_STR}/payments", tags=["payments"])
+app.include_router(admin.router, prefix=f"{settings.API_V1_STR}/admin", tags=["admin"])
 
 @app.get("/")
 async def root():

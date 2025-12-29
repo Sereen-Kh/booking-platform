@@ -61,3 +61,40 @@ async def get_my_bookings(
 ):
     result = await db.execute(select(Booking).where(Booking.customer_id == current_user.id))
     return result.scalars().all()
+
+@router.get("/managed", response_model=List[BookingSchema])
+async def get_provider_bookings(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get bookings for services owned by the current provider.
+    """
+    if current_user.role != "provider":
+         raise HTTPException(status_code=403, detail="Not authorized")
+
+    # Join Booking -> Service to filter by Service.provider_id
+    query = (
+        select(Booking)
+        .join(Booking.service)
+        .where(Service.provider_id == current_user.id)
+    )
+    result = await db.execute(query)
+    return result.scalars().all()
+
+@router.get("/all", response_model=List[BookingSchema])
+async def get_all_bookings(
+    skip: int = 0,
+    limit: int = 100,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get all bookings (Admin only).
+    """
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+        
+    query = select(Booking).offset(skip).limit(limit)
+    result = await db.execute(query)
+    return result.scalars().all()

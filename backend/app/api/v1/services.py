@@ -21,6 +21,7 @@ async def list_services(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
     category_id: Optional[int] = None,
+    provider_id: Optional[int] = None,
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     search: Optional[str] = None,
@@ -30,6 +31,8 @@ async def list_services(
 
     if category_id:
         query = query.where(Service.category_id == category_id)
+    if provider_id:
+        query = query.where(Service.provider_id == provider_id)
     if min_price:
         query = query.where(Service.price >= min_price)
     if max_price:
