@@ -72,7 +72,7 @@ export const authAPI = {
 
     // Store token in localStorage
     localStorage.setItem("access_token", data.access_token);
-    
+
     return data;
   },
 
@@ -97,19 +97,19 @@ export const servicesAPI = {
   getAll: async () => {
     return apiRequest("/services");
   },
-  
+
   getById: async (id) => {
     return apiRequest(`/services/${id}`);
   },
-  
+
   getRecommended: async (limit = 6) => {
     return apiRequest(`/services/recommended?limit=${limit}`);
   },
-  
+
   getProviderServices: async () => {
     return apiRequest("/services/provider/my-services");
   },
-  
+
   createProviderService: async (serviceData) => {
     return apiRequest("/services/provider/my-services", {
       method: "POST",
@@ -125,10 +125,44 @@ export const bookingsAPI = {
       body: JSON.stringify(bookingData),
     });
   },
-  
+
   getUserBookings: async () => {
     return apiRequest("/bookings/my-bookings");
   },
 };
 
-export default { authAPI, servicesAPI, bookingsAPI };
+export const favoritesAPI = {
+  getAll: async () => {
+    return apiRequest("/favorites");
+  },
+
+  add: async (serviceId) => {
+    return apiRequest(`/favorites/${serviceId}`, {
+      method: "POST",
+    });
+  },
+
+  remove: async (serviceId) => {
+    return apiRequest(`/favorites/${serviceId}`, {
+      method: "DELETE",
+    });
+  },
+
+  check: async (serviceId) => {
+    return apiRequest(`/favorites/check/${serviceId}`);
+  },
+};
+
+export const paymentsAPI = {
+  createCheckout: async (serviceId, startTime) => {
+    return apiRequest("/payments/create-checkout", {
+      method: "POST",
+      body: JSON.stringify({
+        service_id: serviceId,
+        start_time: startTime,
+      }),
+    });
+  },
+};
+
+export default { authAPI, servicesAPI, bookingsAPI, favoritesAPI, paymentsAPI };

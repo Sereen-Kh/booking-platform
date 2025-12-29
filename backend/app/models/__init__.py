@@ -4,3 +4,4 @@ from .service import Service, Category
 from .booking import Booking
 from .provider import ProviderProfile
 from .review import Review
+from .favorite import Favorite

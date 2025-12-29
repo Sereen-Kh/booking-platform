@@ -1,28 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '@/services/api/client';
+import { servicesAPI, paymentsAPI } from '@/utils/api';
+import { useFavorites } from '@/context/FavoritesContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
-import { Moon, Sun, Calendar, Clock, Search, MapPin, Star, ShieldCheck, User, CheckCircle2 } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
-
+import { Calendar, Clock, Star, MapPin, ShieldCheck, Heart } from 'lucide-react';
 
 export default function ServiceDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { isActive } = useAuth();
+    const { user } = useAuth();
+    const { isFavorite, toggleFavorite } = useFavorites();
     const [service, setService] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [bookingLoading, setBookingLoading] = useState(false);
+    const [selectedDate, setSelectedDate] = useState('');
 
     useEffect(() => {
         const fetchService = async () => {
             try {
-                const data = await api.services.get(id);
+                const data = await servicesAPI.getById(id);
                 setService(data);
             } catch (error) {
                 console.error('Failed to load service:', error);
@@ -32,6 +31,44 @@ export default function ServiceDetailPage() {
         };
         fetchService();
     }, [id]);
+
+    const handleBooking = async () => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+
+        if (!selectedDate) {
+            alert('Please select a date and time');
+            return;
+        }
+
+        setBookingLoading(true);
+        try {
+            const result = await paymentsAPI.createCheckout(service.id, selectedDate);
+
+            if (result.type === 'free') {
+                // Free service - booking created directly
+                navigate(`/booking/success?booking_id=${result.booking_id}`);
+            } else if (result.type === 'paid') {
+                // Paid service - redirect to Stripe
+                window.location.href = result.checkout_url;
+            }
+        } catch (error) {
+            console.error('Booking failed:', error);
+            alert('Failed to process booking. Please try again.');
+        } finally {
+            setBookingLoading(false);
+        }
+    };
+
+    const handleFavoriteClick = async () => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+        await toggleFavorite(service.id);
+    };
 
     if (loading) {
         return (
@@ -50,15 +87,26 @@ export default function ServiceDetailPage() {
 
     if (!service) return <div className="text-center py-20">Service not found</div>;
 
+    const isFree = service.price === 0;
+
     return (
         <div className="bg-background min-h-screen transition-colors">
             <div className="container px-4 py-12 max-w-6xl">
-                {/* Breadcrumb could go here */}
-
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                     <div className="lg:col-span-2 space-y-8">
                         <div className="space-y-4">
-                            <h1 className="text-4xl font-extrabold tracking-tight text-foreground">{service.name}</h1>
+                            <div className="flex items-start justify-between">
+                                <h1 className="text-4xl font-extrabold font-heading tracking-tight text-foreground">{service.name}</h1>
+                                <button
+                                    onClick={handleFavoriteClick}
+                                    className={`p-3 rounded-full shadow-sm transition-all hover:scale-110 ${isFavorite(service.id)
+                                            ? 'bg-red-500 text-white'
+                                            : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+                                        }`}
+                                >
+                                    <Heart className={`w-5 h-5 ${isFavorite(service.id) ? 'fill-current' : ''}`} />
+                                </button>
+                            </div>
                             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-1 text-amber-500 font-bold">
                                     <Star className="w-4 h-4 fill-current" />
@@ -80,7 +128,7 @@ export default function ServiceDetailPage() {
                         </div>
 
                         <div className="bg-card p-8 rounded-3xl shadow-sm border border-border space-y-4 transition-colors">
-                            <h2 className="text-2xl font-bold text-foreground">About this service</h2>
+                            <h2 className="text-2xl font-bold font-heading text-foreground">About this service</h2>
                             <p className="text-muted-foreground leading-relaxed text-lg">
                                 {service.description}
                             </p>
@@ -105,19 +153,21 @@ export default function ServiceDetailPage() {
 
                     <aside className="lg:sticky lg:top-24">
                         <Card className="border-none shadow-2xl rounded-3xl overflow-hidden bg-card transition-colors">
-                            <CardHeader className="bg-foreground text-background p-6 transition-colors">
+                            <CardHeader className={`p-6 transition-colors ${isFree ? 'bg-emerald-500 text-white' : 'bg-foreground text-background'}`}>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-3xl font-bold">${service.price}</span>
-                                    <span className="text-muted-foreground/60 text-sm">/ session</span>
+                                    <span className="text-3xl font-bold">{isFree ? 'Free' : `$${service.price}`}</span>
+                                    {!isFree && <span className="text-muted-foreground/60 text-sm">/ session</span>}
                                 </div>
                             </CardHeader>
                             <CardContent className="p-6 space-y-6">
                                 <div className="space-y-4">
                                     <h3 className="font-bold text-foreground">Select Date & Time</h3>
-                                    <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl border border-border cursor-pointer hover:border-primary transition-colors">
-                                        <Calendar className="w-5 h-5 text-muted-foreground" />
-                                        <span className="text-sm font-medium">Choose a date...</span>
-                                    </div>
+                                    <input
+                                        type="datetime-local"
+                                        value={selectedDate}
+                                        onChange={(e) => setSelectedDate(e.target.value)}
+                                        className="w-full p-3 bg-muted/50 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                    />
                                 </div>
 
                                 <div className="space-y-2 py-4 border-y border-border">
@@ -127,17 +177,24 @@ export default function ServiceDetailPage() {
                                     </div>
                                     <div className="flex justify-between font-bold text-lg text-foreground">
                                         <span>Total</span>
-                                        <span>${service.price}</span>
+                                        <span>{isFree ? 'Free' : `$${service.price}`}</span>
                                     </div>
                                 </div>
 
                                 <Button
-                                    className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-primary/20"
-                                    onClick={() => isActive ? navigate(`/checkout/${service.id}`) : navigate('/login')}
+                                    className={`w-full h-14 rounded-2xl text-lg font-bold shadow-lg ${isFree
+                                            ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20'
+                                            : 'shadow-primary/20'
+                                        }`}
+                                    onClick={handleBooking}
+                                    disabled={bookingLoading}
+                                    isLoading={bookingLoading}
                                 >
-                                    Reserve Appointment
+                                    {isFree ? 'Apply for Free' : `Pay $${service.price}`}
                                 </Button>
-                                <p className="text-center text-xs text-slate-400">You won't be charged yet</p>
+                                <p className="text-center text-xs text-muted-foreground">
+                                    {isFree ? 'Confirmation will be sent to your email' : 'Secure payment via Stripe'}
+                                </p>
                             </CardContent>
                         </Card>
 

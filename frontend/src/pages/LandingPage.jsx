@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { servicesAPI } from '@/utils/api';
+import { useFavorites } from '@/context/FavoritesContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, MapPin, Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, MapPin, Star, Heart } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function LandingPage() {
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const { isFavorite, toggleFavorite } = useFavorites();
+    const { user } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         loadServices();
@@ -26,6 +31,16 @@ export default function LandingPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleFavoriteClick = async (e, serviceId) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+        await toggleFavorite(serviceId);
     };
 
     return (
@@ -97,10 +112,25 @@ export default function LandingPage() {
                                         <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 font-bold text-4xl uppercase tracking-widest bg-gradient-to-br from-muted to-background/50 group-hover:scale-105 transition-transform duration-500">
                                             {service.name.substring(0, 1)}
                                         </div>
+                                        {/* Favorite Heart Button */}
+                                        <button
+                                            onClick={(e) => handleFavoriteClick(e, service.id)}
+                                            className={`absolute top-3 right-3 p-2 rounded-full shadow-sm transition-all hover:scale-110 ${isFavorite(service.id)
+                                                    ? 'bg-red-500 text-white'
+                                                    : 'bg-white/80 hover:bg-white text-muted-foreground'
+                                                }`}
+                                        >
+                                            <Heart className={`w-4 h-4 ${isFavorite(service.id) ? 'fill-current' : ''}`} />
+                                        </button>
                                     </div>
                                     <CardHeader className="p-5 pb-3">
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] bg-primary/10 px-2 py-1 rounded-md">Featured</span>
+                                            <span className={`text-[10px] font-bold uppercase tracking-[0.2em] px-2 py-1 rounded-md ${service.price === 0
+                                                    ? 'text-emerald-600 bg-emerald-100'
+                                                    : 'text-primary bg-primary/10'
+                                                }`}>
+                                                {service.price === 0 ? 'Free' : `$${service.price}`}
+                                            </span>
                                             <div className="flex items-center gap-1 text-amber-500">
                                                 <Star className="w-3.5 h-3.5 fill-current" />
                                                 <span className="text-sm font-bold">4.9</span>
@@ -114,10 +144,14 @@ export default function LandingPage() {
                                         </p>
                                         <div className="flex items-center justify-between pt-4 border-t border-border">
                                             <div className="flex flex-col">
-                                                <span className="text-2xl font-black text-foreground font-mono transition-colors">${service.price}</span>
+                                                <span className="text-2xl font-black text-foreground font-mono transition-colors">
+                                                    {service.price === 0 ? 'Free' : `$${service.price}`}
+                                                </span>
                                                 <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider">Per session</span>
                                             </div>
-                                            <Button size="sm" className="rounded-xl px-5 font-bold shadow-lg shadow-primary/20">Book</Button>
+                                            <Button size="sm" className="rounded-xl px-5 font-bold shadow-lg shadow-primary/20">
+                                                {service.price === 0 ? 'Apply' : 'Book'}
+                                            </Button>
                                         </div>
                                     </CardContent>
                                 </Card>
