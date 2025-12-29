@@ -1,5 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 @theme {
   --color-border: var(--border);
@@ -61,9 +61,9 @@
   :root {
     /* Neutral Base: Cool Slate */
     --background: 210 40% 98%;
-    /* #F8FAFC */
+    /* #F8FAFC - Slate 50 */
     --foreground: 222 47% 11%;
-    /* #0F172A */
+    /* #0F172A - Slate 900 */
 
     --card: 0 0% 100%;
     /* #FFFFFF */
@@ -72,64 +72,65 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary: Vibrant Blue */
+    /* Primary: Blue 600 */
     --primary: 221 83% 53%;
     /* #2563EB */
     --primary-foreground: 210 40% 98%;
 
-    /* Secondary: Slate Blue */
-    --secondary: 210 40% 96.1%;
-    /* #F1F5F9 */
-    --secondary-foreground: 222 47% 11.2%;
+    /* Secondary: Indigo 500 */
+    --secondary: 239 84% 67%;
+    /* #6366F1 */
+    --secondary-foreground: 210 40% 98%;
 
-    /* Muted: Subtle Gray */
+    /* Muted: Slate 400 */
     --muted: 210 40% 96.1%;
     --muted-foreground: 215 16% 47%;
-    /* #64748B */
 
-    /* Accent: Emerald Green */
+    /* Accent: Emerald 500 */
     --accent: 151 84% 48%;
-    /* #10B981 used as accent color itself */
+    /* #10B981 */
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
+    /* Success: Emerald 500 (Same as Accent) */
     --success: 142 71% 45%;
     --success-foreground: 210 40% 98%;
 
+    /* Warning: Amber 500 */
     --warning: 38 92% 50%;
     --warning-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
-    /* #E2E8F0 */
+    /* Slate 200 */
     --input: 214.3 31.8% 91.4%;
     --ring: 221 83% 53%;
-    /* Matches Primary */
+    /* Primary Blue */
 
-    --radius: 0.75rem;
-    /* 12px */
+    --radius: 0.5rem;
+    /* 8px - Modern, slightly rounded */
   }
 
   .dark {
-    /* Base: Deep Navy */
+    /* Base: Slate 950 */
     --background: 222 47% 4%;
-    /* #020617 - Very dark blue */
+    /* #020617 */
     --foreground: 210 40% 98%;
-    /* #F8FAFC */
 
     --card: 222 47% 6%;
-    /* #050B1D */
+    /* Slate 900 */
     --card-foreground: 210 40% 98%;
 
     --popover: 222 47% 6%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary: Slightly brighter for dark mode */
+    /* Primary: Blue 500 (Lighter) */
     --primary: 217 91% 60%;
     /* #3B82F6 */
     --primary-foreground: 222 47% 4%;
 
+    /* Secondary: Slate 800 */
     --secondary: 217 33% 17%;
     /* #1E293B */
     --secondary-foreground: 210 40% 98%;
@@ -137,8 +138,10 @@
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 151 70% 40%;
-    --accent-foreground: 210 40% 98%;
+    /* Accent: Cyan */
+    --accent: 188 78% 54%;
+    /* #22D3EE */
+    --accent-foreground: 222 47% 4%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -150,7 +153,7 @@
     --warning-foreground: 210 40% 98%;
 
     --border: 217 33% 17%;
-    /* #1E293B */
+    /* Slate 800 */
     --input: 217 33% 17%;
     --ring: 217 91% 60%;
   }
@@ -162,7 +165,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

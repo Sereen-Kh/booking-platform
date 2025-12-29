@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { api } from '@/services/api/client';
+import { authAPI } from '@/utils/api';
 
 const AuthContext = createContext(null);
 
@@ -8,28 +8,53 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // In a real app, you'd fetch the user profile here
-      setUser({ email: 'user@example.com', role: 'customer' }); 
-    }
-    setLoading(false);
+    const initAuth = async () => {
+      if (authAPI.isAuthenticated()) {
+        try {
+          const userData = await authAPI.getCurrentUser();
+          setUser(userData);
+        } catch (error) {
+          console.error("Failed to fetch user profile:", error);
+          authAPI.logout();
+        }
+      }
+      setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
   const login = async (email, password) => {
-    const data = await api.auth.login({ username: email, password });
-    localStorage.setItem('token', data.access_token);
-    setUser({ email, role: 'customer' }); // Simplify for now
-    return data;
+    try {
+      await authAPI.login(email, password);
+      // After login, fetch the full user profile
+      const userData = await authAPI.getCurrentUser();
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
+    }
   };
 
+  const register = async (name, email, password) => {
+    try {
+      await authAPI.register(email, password, name, 'customer');
+      // Auto-login after register
+      return login(email, password);
+    } catch (error) {
+      console.error("Registration failed:", error);
+      throw error;
+    }
+  }
+
   const logout = () => {
-    localStorage.removeItem('token');
+    authAPI.logout();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isActive: !!user, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isActive: !!user, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,4 +1,22 @@
 services:
+  backend:
+    build: 
+      context: ./backend
+    container_name: booking_backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/booking_db
+      - DATABASE_SYNC_URL=postgresql://postgres:postgres@db:5432/booking_db
+      - REDIS_URL=redis://redis:6379/0
+      - API_V1_STR=/api/v1
+      - PROJECT_NAME=BookIt
+    depends_on:
+      - db
+      - redis
+
   db:
     image: postgres:15-alpine
     container_name: booking_db

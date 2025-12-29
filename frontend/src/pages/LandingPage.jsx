@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '@/services/api/client';
+import { servicesAPI } from '@/utils/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,7 @@ export default function LandingPage() {
     const loadServices = async () => {
         setLoading(true);
         try {
-            const data = await api.services.list();
+            const data = await servicesAPI.getRecommended(8);
             setServices(data || []);
         } catch (error) {
             console.error('Failed to load services:', error);
@@ -33,7 +33,7 @@ export default function LandingPage() {
             {/* Hero Section */}
             <section className="bg-card border-b pt-16 pb-24 transition-colors">
                 <div className="container px-4 text-center">
-                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground mb-6">
+                    <h1 className="text-4xl md:text-6xl font-extrabold font-heading tracking-tight text-foreground mb-6">
                         Expert services, <br />
                         <span className="text-primary animate-pulse">booked in seconds.</span>
                     </h1>
@@ -60,7 +60,7 @@ export default function LandingPage() {
                                 className="border-none shadow-none focus-visible:ring-0 text-lg py-6 bg-transparent"
                             />
                         </div>
-                        <Button size="lg" className="rounded-xl px-8 text-lg font-semibold h-14">
+                        <Button size="lg" className="rounded-xl px-8 text-lg font-semibold h-14 shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
                             Search
                         </Button>
                     </div>
@@ -70,8 +70,10 @@ export default function LandingPage() {
             {/* Services Grid */}
             <section className="container px-4 py-16">
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-bold text-foreground">Recommended Services</h2>
-                    <Button variant="ghost" className="text-muted-foreground hover:text-primary">View all</Button>
+                    <h2 className="text-3xl font-bold font-heading text-foreground tracking-tight">Recommended Services</h2>
+                    <Link to="/services">
+                        <Button variant="ghost" className="text-muted-foreground hover:text-primary">View all</Button>
+                    </Link>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -90,13 +92,13 @@ export default function LandingPage() {
                     ) : services.length > 0 ? (
                         services.map((service) => (
                             <Link to={`/services/${service.id}`} key={service.id} className="block group">
-                                <Card className="overflow-hidden border-none shadow-md hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 rounded-3xl cursor-pointer bg-card h-full transform group-hover:-translate-y-2 border border-transparent hover:border-primary/20">
+                                <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 rounded-2xl cursor-pointer bg-card h-full transform group-hover:-translate-y-1">
                                     <div className="h-48 bg-muted relative overflow-hidden">
-                                        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 font-bold text-4xl uppercase tracking-widest bg-gradient-to-br from-muted to-background group-hover:scale-110 transition-transform duration-500">
+                                        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 font-bold text-4xl uppercase tracking-widest bg-gradient-to-br from-muted to-background/50 group-hover:scale-105 transition-transform duration-500">
                                             {service.name.substring(0, 1)}
                                         </div>
                                     </div>
-                                    <CardHeader className="p-5 pb-2">
+                                    <CardHeader className="p-5 pb-3">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] bg-primary/10 px-2 py-1 rounded-md">Featured</span>
                                             <div className="flex items-center gap-1 text-amber-500">
@@ -104,7 +106,7 @@ export default function LandingPage() {
                                                 <span className="text-sm font-bold">4.9</span>
                                             </div>
                                         </div>
-                                        <CardTitle className="text-xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors">{service.name}</CardTitle>
+                                        <CardTitle className="text-lg font-bold font-heading text-foreground leading-tight group-hover:text-primary transition-colors">{service.name}</CardTitle>
                                     </CardHeader>
                                     <CardContent className="p-5 pt-0">
                                         <p className="text-sm text-muted-foreground line-clamp-2 mb-6 min-h-[40px]">

@@ -78,12 +78,23 @@ export default function Dashboard() {
             <button className="card-btn">View Bookings</button>
           </div>
 
+          <div className="dashboard-card">
+            <div className="card-icon">🔍</div>
+            <h3>Browse Services</h3>
+            <p>Find and book services</p>
+            <button className="card-btn" onClick={() => navigate("/services")}>
+              View Services
+            </button>
+          </div>
+
           {user?.role === "provider" && (
             <div className="dashboard-card">
               <div className="card-icon">🛠️</div>
               <h3>My Services</h3>
               <p>Manage services you offer</p>
-              <button className="card-btn">Manage Services</button>
+              <button className="card-btn" onClick={() => navigate("/provider/services")}>
+                Manage Services
+              </button>
             </div>
           )}
 

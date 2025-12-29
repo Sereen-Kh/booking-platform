@@ -4,9 +4,16 @@ from sqlalchemy import select, func
 from typing import List, Optional
 from ...database import get_db
 from ...models.service import Service, Category
-from ...schemas.service import Service as ServiceSchema, ServiceCreate, Category as CategorySchema
+from ...schemas.service import (
+    Service as ServiceSchema,
+    ServiceCreate,
+    Category as CategorySchema,
+)
+from ...models.user import User
+from .auth import get_current_user
 
 router = APIRouter()
+
 
 @router.get("/", response_model=List[ServiceSchema])
 async def list_services(
@@ -19,7 +26,7 @@ async def list_services(
     db: AsyncSession = Depends(get_db)
 ):
     query = select(Service)
-    
+
     if category_id:
         query = query.where(Service.category_id == category_id)
     if min_price:
@@ -28,9 +35,10 @@ async def list_services(
         query = query.where(Service.price <= max_price)
     if search:
         query = query.where(Service.name.ilike(f"%{search}%"))
-        
+
     result = await db.execute(query.offset(skip).limit(limit))
     return result.scalars().all()
+
 
 @router.get("/{service_id}", response_model=ServiceSchema)
 async def get_service(service_id: int, db: AsyncSession = Depends(get_db)):
@@ -40,7 +48,61 @@ async def get_service(service_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Service not found")
     return service
 
+
 @router.get("/categories", response_model=List[CategorySchema])
 async def list_categories(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Category))
     return result.scalars().all()
+
+
+@router.get("/recommended", response_model=List[ServiceSchema])
+async def get_recommended_services(
+    limit: int = Query(6, ge=1, le=20),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get recommended/popular services for the home page"""
+    # For now, return random services. Later implement based on
+    # popularity, ratings, etc.
+    query = select(Service).order_by(func.random()).limit(limit)
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+@router.get("/provider/my-services", response_model=List[ServiceSchema])
+async def get_provider_services(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get services for the current provider"""
+    if current_user.role != "provider":
+        raise HTTPException(
+            status_code=403,
+            detail="Only providers can access their services"
+        )
+
+    query = select(Service).where(Service.provider_id == current_user.id)
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+@router.post("/provider/my-services", response_model=ServiceSchema)
+async def create_provider_service(
+    service_data: ServiceCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new service for the current provider"""
+    if current_user.role != "provider":
+        raise HTTPException(
+            status_code=403,
+            detail="Only providers can create services"
+        )
+
+    db_service = Service(
+        **service_data.model_dump(),
+        provider_id=current_user.id
+    )
+    db.add(db_service)
+    await db.commit()
+    await db.refresh(db_service)
+    return db_service

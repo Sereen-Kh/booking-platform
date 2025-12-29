@@ -101,6 +101,21 @@ export const servicesAPI = {
   getById: async (id) => {
     return apiRequest(`/services/${id}`);
   },
+  
+  getRecommended: async (limit = 6) => {
+    return apiRequest(`/services/recommended?limit=${limit}`);
+  },
+  
+  getProviderServices: async () => {
+    return apiRequest("/services/provider/my-services");
+  },
+  
+  createProviderService: async (serviceData) => {
+    return apiRequest("/services/provider/my-services", {
+      method: "POST",
+      body: JSON.stringify(serviceData),
+    });
+  },
 };
 
 export const bookingsAPI = {

@@ -20,13 +20,29 @@ export const api = {
 
     auth: {
         register: (data) => api.fetch('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
-        login: (data) => api.fetch('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+        login: (data) => {
+            // OAuth2 expects form data
+            const formData = new URLSearchParams();
+            formData.append('username', data.username);
+            formData.append('password', data.password);
+            return api.fetch('/auth/login', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            });
+        },
+        getMe: () => api.fetch('/auth/me'),
     },
 
     services: {
         list: (params = '') => api.fetch(`/services?${params}`),
         get: (id) => api.fetch(`/services/${id}`),
         listCategories: () => api.fetch('/services/categories'),
+        getRecommended: (limit = 6) => api.fetch(`/services/recommended?limit=${limit}`),
+        getProviderServices: () => api.fetch('/services/provider/my-services'),
+        createProviderService: (data) => api.fetch('/services/provider/my-services', { method: 'POST', body: JSON.stringify(data) }),
     },
 
     bookings: {
