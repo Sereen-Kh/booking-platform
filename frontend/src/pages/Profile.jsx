@@ -4,11 +4,11 @@ import { Calendar, User, Mail, Phone, Camera, Loader2, ArrowLeft, LogOut } from 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
-import { useAuth } from '@/hooks/useAuth';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
-import { supabase } from '@/lib/api';
+
 
 /**
  * @typedef {Object} Profile
@@ -20,10 +20,10 @@ import { supabase } from '@/lib/api';
  */
 
 export default function ProfilePage() {
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading, logout: signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [profile, setProfile] = useState(null);
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -40,19 +40,12 @@ export default function ProfilePage() {
     if (!user) return;
     const fetchProfile = async () => {
       try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (error) throw error;
-
-        if (data) {
-          setProfile(data);
-          setFullName(data.full_name || '');
-          setPhone(data.phone || '');
-        }
+        const response = await fetch(`/api/v1/profiles/${user.id}`);
+        if (!response.ok) throw new Error('Failed to fetch profile');
+        const data = await response.json();
+        setProfile(data);
+        setFullName(data.full_name || '');
+        setPhone(data.phone || '');
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast({
@@ -71,19 +64,19 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     if (!user) return;
-    
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
+      const response = await fetch(`/api/v1/profiles/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           full_name: fullName,
           phone: phone,
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to update profile');
       toast({
         title: 'Profile updated',
         description: 'Your profile has been saved successfully.',
@@ -119,11 +112,11 @@ export default function ProfilePage() {
 
   const initials = fullName
     ? fullName
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
     : user?.email?.slice(0, 2).toUpperCase() || 'U';
 
   return (

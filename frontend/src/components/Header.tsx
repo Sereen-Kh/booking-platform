@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,7 +23,7 @@ const navLinks = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, signOut, loading } = useAuth();
+  const { user, logout: signOut, loading } = useAuth();
   const { isAdmin } = useUserRole();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -38,11 +38,11 @@ export function Header() {
 
   const userInitials = user?.user_metadata?.full_name
     ? user.user_metadata.full_name
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2)
     : user?.email?.slice(0, 2).toUpperCase() || "U";
 
   return (

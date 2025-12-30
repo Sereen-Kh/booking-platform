@@ -4,7 +4,7 @@ import { Calendar, Mail, Lock, User, ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
@@ -19,8 +19,8 @@ export default function Auth() {
   const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  
-  const { signIn, signUp, user, loading } = useAuth();
+
+  const { login: signIn, register: signUp, user, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -55,7 +55,7 @@ export default function Auth() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsLoading(true);
