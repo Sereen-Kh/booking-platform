@@ -33,21 +33,21 @@
     --input: 30 15% 88%;
     --ring: 174 72% 40%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     /* Custom tokens */
-    --gradient-hero: linear-gradient(135deg, hsl(174 72% 40%) 0%, hsl(174 72% 55%) 50%, hsl(180 60% 60%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(30 20% 98%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(174 72% 35%) 0%, hsl(174 72% 45%) 50%, hsl(180 60% 50%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(30 20% 99%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(12 85% 55%) 0%, hsl(25 90% 60%) 100%);
-    
-    --shadow-sm: 0 1px 2px 0 hsl(220 25% 12% / 0.04);
-    --shadow-md: 0 4px 12px -2px hsl(220 25% 12% / 0.08);
-    --shadow-lg: 0 12px 32px -4px hsl(220 25% 12% / 0.12);
-    --shadow-glow: 0 0 40px hsl(174 72% 40% / 0.2);
-    --shadow-accent: 0 8px 24px -4px hsl(12 85% 60% / 0.3);
+
+    --shadow-sm: 0 1px 3px 0 hsl(220 25% 12% / 0.05);
+    --shadow-md: 0 6px 16px -4px hsl(220 25% 12% / 0.08);
+    --shadow-lg: 0 12px 40px -8px hsl(220 25% 12% / 0.12);
+    --shadow-glow: 0 0 50px hsl(174 72% 40% / 0.25);
+    --shadow-accent: 0 8px 30px -4px hsl(12 85% 60% / 0.35);
 
     --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.4, 0.25, 1);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -91,8 +91,8 @@
 
     --gradient-hero: linear-gradient(135deg, hsl(174 72% 45%) 0%, hsl(174 72% 55%) 50%, hsl(180 60% 50%) 100%);
     --gradient-card: linear-gradient(180deg, hsl(220 25% 12%) 0%, hsl(220 25% 10%) 100%);
-    
-    --shadow-glow: 0 0 40px hsl(174 72% 50% / 0.25);
+
+    --shadow-glow: 0 0 50px hsl(174 72% 50% / 0.3);
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -106,15 +106,18 @@
 }
 
 @layer base {
-  * {
-    @apply border;
-  }
+
 
   body {
     @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-tight;
   }
 }
@@ -157,6 +160,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -167,6 +171,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -178,6 +183,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -185,9 +191,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }

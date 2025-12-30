@@ -78,74 +78,82 @@ const services = [
 
 export function FeaturedServices() {
   return (
-    <section id="services" className="py-20 bg-secondary/30">
-      <div className="container mx-auto px-4">
+    <section id="services" className="py-24 bg-secondary/50 relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      <div className="absolute -left-20 top-40 w-72 h-72 bg-primary/5 rounded-full blur-3xl mix-blend-multiply" />
+      <div className="absolute -right-20 bottom-40 w-72 h-72 bg-accent/5 rounded-full blur-3xl mix-blend-multiply" />
+
+      <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <span className="text-primary font-medium text-sm uppercase tracking-wider">Featured</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4">
+        <div className="text-center mb-16 animate-fade-up">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold tracking-wider uppercase mb-4">
+            <Star className="w-3 h-3 fill-primary" />
+            Curated Services
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
             Popular Services Near You
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Discover top-rated professionals ready to help with your needs
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Discover top-rated professionals ready to help with your needs.
+            Quality service, guaranteed satisfaction.
           </p>
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <article
               key={service.id}
-              className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 animate-fade-up"
+              className="group bg-card rounded-3xl overflow-hidden border border-border/50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-fade-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Image */}
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-64 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
                 <img
                   src={service.image}
                   alt={service.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
                 />
-                <div className="absolute top-3 left-3">
-                  <span className="px-3 py-1 bg-background/90 backdrop-blur-sm rounded-full text-xs font-medium text-foreground">
+                <div className="absolute top-4 left-4 z-20">
+                  <span className="px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full text-xs font-bold text-foreground shadow-sm">
                     {service.category}
                   </span>
+                </div>
+                <div className="absolute bottom-4 right-4 z-20 flex flex-col items-end">
+                  <span className="text-white font-bold text-2xl drop-shadow-md">${service.price}</span>
+                  <span className="text-white/90 text-xs font-medium">starting at</span>
                 </div>
               </div>
 
               {/* Content */}
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors">
-                      {service.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">{service.provider}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-lg font-bold text-foreground">${service.price}</span>
-                  </div>
+              <div className="p-6">
+                <div className="mb-4">
+                  <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors mb-1">
+                    {service.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground font-medium">{service.provider}</p>
                 </div>
 
-                {/* Meta */}
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                    <span className="font-medium text-foreground">{service.rating}</span>
-                    <span>({service.reviews})</span>
+                <div className="flex items-center justify-between py-4 border-t border-border/50 mb-4">
+                  <div className="flex items-center gap-1.5">
+                    <Star className="w-4 h-4 text-orange-400 fill-orange-400" />
+                    <span className="font-bold text-foreground">{service.rating}</span>
+                    <span className="text-muted-foreground text-sm">({service.reviews})</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4" />
                     <span>{service.duration}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
-                  <MapPin className="w-3.5 h-3.5" />
-                  <span>{service.location}</span>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <span className="truncate">{service.location}</span>
                 </div>
 
-                <Button variant="default" className="w-full">
+                <Button variant="default" className="w-full h-11 rounded-xl text-md font-semibold shadow-md group-hover:shadow-glow transition-all duration-300">
                   Book Now
                 </Button>
               </div>
@@ -154,8 +162,8 @@ export function FeaturedServices() {
         </div>
 
         {/* View All Button */}
-        <div className="text-center mt-10">
-          <Button variant="outline-hero" size="lg">
+        <div className="text-center mt-16">
+          <Button variant="outline" size="lg" className="rounded-full px-8 border-2 hover:bg-background hover:scale-105 transition-all duration-300">
             View All Services
           </Button>
         </div>
