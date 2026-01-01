@@ -4,82 +4,64 @@ const steps = [
   {
     icon: Search,
     title: "Find Your Service",
-    description:
-      "Browse through hundreds of services or search for exactly what you need.",
-    bgColor: "bg-[#E8F5F3]",
-    iconColor: "text-[#2A9D8F]",
-    badgeBg: "bg-[#1A3A35]",
+    description: "Browse through hundreds of services or search for exactly what you need.",
+    color: "bg-primary/10 text-primary",
   },
   {
     icon: Calendar,
     title: "Pick a Time",
-    description:
-      "Choose a convenient date and time slot that works best for your schedule.",
-    bgColor: "bg-[#FEE9E5]",
-    iconColor: "text-[#E76F51]",
-    badgeBg: "bg-[#1A1A1A]",
+    description: "Choose a convenient date and time slot that works best for your schedule.",
+    color: "bg-accent/10 text-accent",
   },
   {
     icon: CheckCircle,
     title: "Get It Done",
-    description:
-      "Meet your professional, enjoy the service, and pay securely online.",
-    bgColor: "bg-[#E8F5EC]",
-    iconColor: "text-[#2A9D8F]",
-    badgeBg: "bg-[#1A3A35]",
+    description: "Meet your professional, enjoy the service, and pay securely online.",
+    color: "bg-emerald-500/10 text-emerald-600",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="w-full py-20 md:py-28 bg-[#F8F9FA]">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+    <section id="how-it-works" className="py-20">
+      <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-14 md:mb-20">
-          <span className="text-primary font-semibold text-xs uppercase tracking-[0.25em] mb-4 block">
-            Simple Process
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-[40px] font-bold text-[#1A1A1A] mb-4">
+        <div className="text-center mb-16">
+          <span className="text-primary font-medium text-sm uppercase tracking-wider">Simple Process</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4">
             How It Works
           </h2>
-          <p className="text-gray-500 max-w-md mx-auto text-base md:text-lg">
+          <p className="text-muted-foreground max-w-2xl mx-auto">
             Booking services has never been easier. Just three simple steps.
           </p>
         </div>
 
-        {/* Steps - 3 columns evenly spaced */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 lg:gap-16">
+        {/* Steps */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="relative flex flex-col items-center text-center"
+              className="relative text-center animate-fade-up"
+              style={{ animationDelay: `${index * 0.15}s` }}
             >
-              {/* Icon Container with Badge */}
-              <div className="relative inline-flex mb-8">
-                {/* Step Number Badge - positioned at top-right */}
-                <div
-                  className={`absolute -top-2 -right-2 w-7 h-7 rounded-full ${step.badgeBg} text-white text-sm font-bold flex items-center justify-center z-10`}
-                >
-                  {index + 1}
-                </div>
+              {/* Connector Line */}
+              {index < steps.length - 1 && (
+                <div className="hidden md:block absolute top-12 left-1/2 w-full h-0.5 bg-gradient-to-r from-border via-primary/30 to-border" />
+              )}
 
-                {/* Icon Background */}
-                <div
-                  className={`w-28 h-28 md:w-32 md:h-32 rounded-3xl ${step.bgColor} flex items-center justify-center`}
-                >
-                  <step.icon
-                    className={`w-12 h-12 md:w-14 md:h-14 ${step.iconColor} stroke-[1.5]`}
-                  />
-                </div>
+              {/* Icon */}
+              <div className={`w-24 h-24 rounded-2xl ${step.color} flex items-center justify-center mx-auto mb-6 relative z-10`}>
+                <step.icon className="w-10 h-10" />
+              </div>
+
+              {/* Step Number */}
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 w-8 h-8 rounded-full bg-foreground text-background text-sm font-bold flex items-center justify-center">
+                {index + 1}
               </div>
 
               {/* Content */}
-              <h3 className="text-xl md:text-[22px] font-bold text-[#1A1A1A] mb-3">
-                {step.title}
-              </h3>
-              <p className="text-gray-500 leading-relaxed text-[15px] max-w-[260px]">
-                {step.description}
-              </p>
+              <h3 className="text-xl font-semibold text-foreground mb-3">{step.title}</h3>
+              <p className="text-muted-foreground leading-relaxed">{step.description}</p>
             </div>
           ))}
         </div>

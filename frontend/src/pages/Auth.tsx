@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Mail, Lock, User, ArrowLeft, Loader2 } from 'lucide-react';
+import { Calendar, Mail, Lock, User, ArrowLeft, Loader2, Briefcase, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
+
+type UserRole = 'user' | 'provider';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -17,10 +19,11 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('user');
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string }>({});
 
-  const { login: signIn, register: signUp, user, loading } = useAuth();
+  const { login, logout, register, user, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -31,7 +34,8 @@ export default function Auth() {
   }, [user, loading, navigate]);
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: { email?: string; password?: string; fullName?: string } = {};
+
     const emailResult = emailSchema.safeParse(email);
     if (!emailResult.success) {
       newErrors.email = emailResult.error.errors[0].message;
@@ -53,7 +57,7 @@ export default function Auth() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) return;
@@ -62,7 +66,7 @@ export default function Auth() {
 
     try {
       if (isSignUp) {
-        const { error } = await signUp(email, password, fullName);
+        const { error } = await register(email, password, fullName, selectedRole);
         if (error) {
           if (error.message.includes('already registered')) {
             toast({
@@ -84,7 +88,7 @@ export default function Auth() {
           });
         }
       } else {
-        const { error } = await signIn(email, password);
+        const { error } = await login(email, password);
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
             toast({
@@ -106,7 +110,7 @@ export default function Auth() {
           });
         }
       }
-    } catch {
+    } catch (error) {
       toast({
         title: 'Error',
         description: 'An unexpected error occurred. Please try again.',
@@ -160,23 +164,59 @@ export default function Auth() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {isSignUp && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="John Doe"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10 h-12"
-                  />
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="John Doe"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="pl-10 h-12"
+                    />
+                  </div>
+                  {errors.fullName && (
+                    <p className="text-sm text-destructive">{errors.fullName}</p>
+                  )}
                 </div>
-                {errors.fullName && (
-                  <p className="text-sm text-destructive">{errors.fullName}</p>
-                )}
-              </div>
+
+                <div className="space-y-2">
+                  <Label>I want to</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole('user')}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${selectedRole === 'user'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                        }`}
+                    >
+                      <Users className={`w-6 h-6 ${selectedRole === 'user' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <span className={`font-medium text-sm ${selectedRole === 'user' ? 'text-primary' : 'text-foreground'}`}>
+                        Book Services
+                      </span>
+                      <span className="text-xs text-muted-foreground">As a customer</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole('provider')}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${selectedRole === 'provider'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                        }`}
+                    >
+                      <Briefcase className={`w-6 h-6 ${selectedRole === 'provider' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <span className={`font-medium text-sm ${selectedRole === 'provider' ? 'text-primary' : 'text-foreground'}`}>
+                        Offer Services
+                      </span>
+                      <span className="text-xs text-muted-foreground">As a provider</span>
+                    </button>
+                  </div>
+                </div>
+              </>
             )}
 
             <div className="space-y-2">
@@ -240,6 +280,7 @@ export default function Auth() {
               onClick={() => {
                 setIsSignUp(!isSignUp);
                 setErrors({});
+                setSelectedRole('user');
               }}
               className="font-medium text-primary hover:underline"
             >

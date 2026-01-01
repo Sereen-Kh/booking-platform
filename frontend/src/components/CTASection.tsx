@@ -3,34 +3,31 @@ import { ArrowRight } from "lucide-react";
 
 export function CTASection() {
   return (
-    <section className="py-20 md:py-28 bg-[#FBFDFA]">
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
-        <div className="relative rounded-2xl md:rounded-3xl bg-[#5BB5A2] p-8 md:p-16 text-center overflow-hidden shadow-2xl flex flex-col items-center">
-          {/* Background decorations - more subtle */}
-          <div className="absolute top-0 right-0 w-[40%] h-full bg-white/5 skew-x-[-20deg] translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-20 md:w-28 h-20 md:h-28 bg-white/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
+    <section className="py-20">
+      <div className="container mx-auto px-4">
+        <div className="relative rounded-3xl gradient-hero p-10 md:p-16 text-center overflow-hidden">
+          {/* Background decorations */}
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute top-0 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-white/10 rounded-full blur-2xl" />
+          </div>
 
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-4 md:mb-6 leading-tight tracking-tight max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4">
             Ready to Get Started?
           </h2>
-          <p className="text-white/90 text-base md:text-xl max-w-xl mx-auto mb-6 md:mb-10 font-medium">
-            Join thousands of satisfied customers who book services effortlessly
-            every day.
+          <p className="text-primary-foreground/90 text-lg md:text-xl max-w-2xl mx-auto mb-8">
+            Join thousands of satisfied customers who book services effortlessly every day.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
-            <Button
-              variant="outline"
-              size="xl"
-              className="h-12 md:h-14 px-6 md:px-10 rounded-full text-base bg-white border-transparent text-[#5BB5A2] hover:bg-gray-50 transition-all font-bold group"
-            >
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button variant="accent" size="xl">
               Start Booking Free
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5" />
             </Button>
             <Button
               variant="ghost"
               size="xl"
-              className="h-12 md:h-14 px-6 md:px-10 rounded-full text-base text-white hover:bg-white/10 font-bold"
+              className="text-primary-foreground hover:bg-white/20 hover:text-primary-foreground"
             >
               Contact Sales
             </Button>

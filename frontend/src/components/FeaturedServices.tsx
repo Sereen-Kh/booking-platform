@@ -4,32 +4,6 @@ import { Button } from "@/components/ui/button";
 const services = [
   {
     id: 1,
-    title: "Massage Therapy",
-    provider: "Zen Wellness",
-    rating: 4.9,
-    reviews: 276,
-    price: 90,
-    duration: "1 hr",
-    location: "Wellness Center",
-    image:
-      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&h=600&fit=crop",
-    category: "Wellness",
-  },
-  {
-    id: 2,
-    title: "Pet Grooming",
-    provider: "Pawfect Care",
-    rating: 4.8,
-    reviews: 167,
-    price: 45,
-    duration: "1 hr",
-    location: "Pet Plaza",
-    image:
-      "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800&h=600&fit=crop",
-    category: "Pet Care",
-  },
-  {
-    id: 3,
     title: "Home Cleaning",
     provider: "Sparkle Clean Co.",
     rating: 4.9,
@@ -37,12 +11,11 @@ const services = [
     price: 80,
     duration: "2-3 hrs",
     location: "Your Location",
-    image:
-      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&h=600&fit=crop",
+    image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop",
     category: "Home Services",
   },
   {
-    id: 4,
+    id: 2,
     title: "Personal Training",
     provider: "FitLife Studio",
     rating: 4.8,
@@ -50,117 +23,139 @@ const services = [
     price: 65,
     duration: "1 hr",
     location: "Downtown Gym",
-    image:
-      "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=600&fit=crop",
+    image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
     category: "Fitness",
+  },
+  {
+    id: 3,
+    title: "Hair Styling",
+    provider: "Luxe Salon",
+    rating: 5.0,
+    reviews: 412,
+    price: 55,
+    duration: "45 min",
+    location: "Main Street",
+    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=300&fit=crop",
+    category: "Beauty",
+  },
+  {
+    id: 4,
+    title: "Plumbing Repair",
+    provider: "Quick Fix Pros",
+    rating: 4.7,
+    reviews: 189,
+    price: 95,
+    duration: "1-2 hrs",
+    location: "Your Location",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    category: "Home Services",
+  },
+  {
+    id: 5,
+    title: "Massage Therapy",
+    provider: "Zen Wellness",
+    rating: 4.9,
+    reviews: 276,
+    price: 90,
+    duration: "1 hr",
+    location: "Wellness Center",
+    image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&h=300&fit=crop",
+    category: "Wellness",
+  },
+  {
+    id: 6,
+    title: "Pet Grooming",
+    provider: "Pawfect Care",
+    rating: 4.8,
+    reviews: 167,
+    price: 45,
+    duration: "1 hr",
+    location: "Pet Plaza",
+    image: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=400&h=300&fit=crop",
+    category: "Pet Care",
   },
 ];
 
 export function FeaturedServices() {
   return (
-    <section
-      id="services"
-      className="py-24 md:py-32 bg-[#FDFBF7] relative overflow-hidden"
-    >
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 relative z-10">
+    <section id="services" className="py-20 bg-secondary/30">
+      <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-16 md:mb-20 animate-fade-up">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-primary text-xs font-bold tracking-wider uppercase mb-6 shadow-sm">
-            <Star className="w-3 h-3 fill-primary" />
-            Curated Services
-          </div>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1A1A1A] mb-4 tracking-tight">
+        <div className="text-center mb-12">
+          <span className="text-primary font-medium text-sm uppercase tracking-wider">Featured</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4">
             Popular Services Near You
           </h2>
-          <p className="text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            Discover top-rated professionals ready to help with your needs.
-            Quality service, guaranteed satisfaction.
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Discover top-rated professionals ready to help with your needs
           </p>
         </div>
 
-        {/* Services Grid - 2 Columns for Large Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
-          {services.map((service) => (
-            <div
+        {/* Services Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {services.map((service, index) => (
+            <article
               key={service.id}
-              className="group flex flex-col h-full bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+              className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 animate-fade-up"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              {/* Image Header */}
-              <div className="relative w-full h-48 overflow-hidden">
+              {/* Image */}
+              <div className="relative h-48 overflow-hidden">
                 <img
                   src={service.image}
                   alt={service.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" />
-
-                {/* Price Display - Top Right Overlay */}
-                <div className="absolute top-4 right-4 text-right z-20">
-                  <div className="text-2xl font-bold text-white drop-shadow-md tracking-tight">
-                    ${service.price}
-                  </div>
-                  <div className="text-white/90 text-xs font-medium drop-shadow-md">
-                    starting at
-                  </div>
-                </div>
-              </div>
-
-              {/* Service Information */}
-              <div className="flex flex-col flex-grow p-6">
-                {/* Title and Provider */}
-                <div className="mb-4">
-                  <h3 className="font-serif text-xl font-bold text-[#1A1A1A] mb-1 group-hover:text-primary transition-colors">
-                    {service.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 font-medium">
-                    {service.provider}
-                  </p>
-                </div>
-
-                {/* Meta Information Row */}
-                <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-                  <div className="flex items-center gap-1.5">
-                    <Star className="w-4 h-4 text-orange-400 fill-orange-400" />
-                    <span className="font-bold text-gray-900 text-sm">
-                      {service.rating}
-                    </span>
-                    <span className="text-gray-400 text-sm">
-                      ({service.reviews})
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-gray-500">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm">{service.duration}</span>
-                  </div>
-                </div>
-
-                {/* Location */}
-                <div className="flex items-center gap-2 text-gray-500 mb-6">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">
-                    {service.location}
+                <div className="absolute top-3 left-3">
+                  <span className="px-3 py-1 bg-background/90 backdrop-blur-sm rounded-full text-xs font-medium text-foreground">
+                    {service.category}
                   </span>
                 </div>
-
-                {/* Primary CTA */}
-                <div className="mt-auto">
-                  <Button className="w-full h-12 rounded-xl text-sm font-bold bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/10 transition-all duration-300">
-                    Book Now
-                  </Button>
-                </div>
               </div>
-            </div>
+
+              {/* Content */}
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors">
+                      {service.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">{service.provider}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-lg font-bold text-foreground">${service.price}</span>
+                  </div>
+                </div>
+
+                {/* Meta */}
+                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                  <div className="flex items-center gap-1">
+                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                    <span className="font-medium text-foreground">{service.rating}</span>
+                    <span>({service.reviews})</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{service.duration}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>{service.location}</span>
+                </div>
+
+                <Button variant="default" className="w-full">
+                  Book Now
+                </Button>
+              </div>
+            </article>
           ))}
         </div>
 
-        {/* Secondary CTA */}
-        <div className="text-center mt-16 md:mt-24">
-          <Button
-            variant="outline"
-            size="lg"
-            className="h-14 px-12 rounded-full border-2 border-gray-200 bg-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all font-semibold text-base tracking-wide"
-          >
+        {/* View All Button */}
+        <div className="text-center mt-10">
+          <Button variant="outline-hero" size="lg">
             View All Services
           </Button>
         </div>

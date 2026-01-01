@@ -195,11 +195,30 @@ export const adminAPI = {
   getUserDetails: async (userId) => {
     return apiRequest(`/admin/users/${userId}`);
   },
+
+  updateUserRole: async (userId, role) => {
+    return apiRequest(`/admin/users/${userId}/role`, {
+      method: "PUT",
+      body: JSON.stringify({ role }),
+    });
+  },
 };
 
 export const providersAPI = {
   getProfileByUserId: async (userId) => {
     return apiRequest(`/providers/by-user/${userId}`);
+  },
+};
+
+export const profilesAPI = {
+  get: async (userId) => {
+    return apiRequest(`/profiles/${userId}`);
+  },
+  update: async (userId, data) => {
+    return apiRequest(`/profiles/${userId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
   },
 };
 
@@ -237,4 +256,4 @@ export const paymentsAPI = {
   },
 };
 
-export default { authAPI, servicesAPI, bookingsAPI, favoritesAPI, paymentsAPI, providersAPI, adminAPI };
+export default { authAPI, servicesAPI, bookingsAPI, favoritesAPI, paymentsAPI, providersAPI, adminAPI, profilesAPI };
