@@ -78,15 +78,15 @@ export function FeaturedServices() {
         </div>
 
         {/* Services Grid - 2 Columns Desktop, 1 Column Mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6 w-full">
           {services.map((service) => (
             <div
               key={service.id}
               data-testid={`service-card-${service.id}`}
-              className="group bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200 overflow-hidden"
+              className="group bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200 overflow-hidden w-full"
             >
               {/* Image Container - Fixed height for consistent proportions */}
-              <div className="relative h-44 overflow-hidden bg-gray-100">
+              <div className="relative h-44 w-full overflow-hidden bg-gray-100">
                 <img
                   src={service.image}
                   alt={service.title}
