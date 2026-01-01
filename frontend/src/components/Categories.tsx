@@ -1,54 +1,106 @@
-import { 
-  Home, 
-  Scissors, 
-  Heart, 
-  Car, 
-  Dumbbell, 
-  Camera, 
-  PawPrint, 
-  Briefcase 
+import {
+  Home,
+  Scissors,
+  Heart,
+  Car,
+  Dumbbell,
+  Camera,
+  PawPrint,
+  Briefcase,
 } from "lucide-react";
 
 const categories = [
-  { icon: Home, label: "Home Services", count: 1240, color: "hover:bg-blue-500/10 hover:text-blue-600 hover:border-blue-500/30" },
-  { icon: Scissors, label: "Beauty & Spa", count: 856, color: "hover:bg-pink-500/10 hover:text-pink-600 hover:border-pink-500/30" },
-  { icon: Heart, label: "Wellness", count: 623, color: "hover:bg-red-500/10 hover:text-red-600 hover:border-red-500/30" },
-  { icon: Car, label: "Automotive", count: 412, color: "hover:bg-amber-500/10 hover:text-amber-600 hover:border-amber-500/30" },
-  { icon: Dumbbell, label: "Fitness", count: 534, color: "hover:bg-emerald-500/10 hover:text-emerald-600 hover:border-emerald-500/30" },
-  { icon: Camera, label: "Photography", count: 298, color: "hover:bg-purple-500/10 hover:text-purple-600 hover:border-purple-500/30" },
-  { icon: PawPrint, label: "Pet Care", count: 445, color: "hover:bg-orange-500/10 hover:text-orange-600 hover:border-orange-500/30" },
-  { icon: Briefcase, label: "Professional", count: 367, color: "hover:bg-cyan-500/10 hover:text-cyan-600 hover:border-cyan-500/30" },
+  {
+    icon: Home,
+    label: "Home Services",
+    count: 1240,
+  },
+  {
+    icon: Scissors,
+    label: "Beauty & Spa",
+    count: 856,
+  },
+  {
+    icon: Heart,
+    label: "Wellness",
+    count: 623,
+  },
+  {
+    icon: Car,
+    label: "Automotive",
+    count: 412,
+  },
+  {
+    icon: Dumbbell,
+    label: "Fitness",
+    count: 534,
+  },
+  {
+    icon: Camera,
+    label: "Photography",
+    count: 298,
+  },
+  {
+    icon: PawPrint,
+    label: "Pet Care",
+    count: 445,
+  },
+  {
+    icon: Briefcase,
+    label: "Professional",
+    count: 367,
+  },
 ];
 
 export function Categories() {
   return (
-    <section id="categories" className="py-20 bg-secondary/30">
-      <div className="container mx-auto px-4">
+    <section id="categories" className="w-full py-24 md:py-32 bg-[#FDFBF7]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <span className="text-primary font-medium text-sm uppercase tracking-wider">Explore</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4">
+        <div className="text-center mb-16 md:mb-20">
+          <span className="text-primary font-bold text-xs uppercase tracking-[0.2em] mb-4 block">
+            Explore
+          </span>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1A1A1A] mb-4 tracking-tight">
             Browse by Category
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-gray-500 max-w-2xl mx-auto font-light">
             Find the perfect service from our wide range of categories
           </p>
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-          {categories.map((category, index) => (
-            <button
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:grid-flow-col md:grid-rows-4 lg:grid-rows-2 gap-8">
+          {categories.map((category) => (
+            <div
               key={category.label}
-              className={`group p-6 bg-card rounded-2xl border border-border text-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 animate-fade-up ${category.color}`}
-              style={{ animationDelay: `${index * 0.05}s` }}
+              className="
+        bg-white
+        border border-gray-200
+        rounded-2xl
+        p-10
+        flex flex-col items-center justify-center
+        text-center
+        gap-4
+        transition-colors
+        hover:border-primary/40
+        cursor-pointer
+        h-full
+      "
             >
-              <category.icon className="w-8 h-8 mx-auto mb-3 text-muted-foreground group-hover:scale-110 transition-all duration-300" />
-              <h3 className="font-semibold text-foreground mb-1 group-hover:text-inherit transition-colors">
+              {/* Icon */}
+              <div className="text-gray-500 group-hover:text-primary transition-colors">
+                <category.icon className="w-8 h-8 stroke-[1.5]" />
+              </div>
+
+              {/* Label */}
+              <h3 className="font-serif text-lg font-semibold text-[#1A1A1A]">
                 {category.label}
               </h3>
-              <p className="text-sm text-muted-foreground">{category.count} services</p>
-            </button>
+
+              {/* Count */}
+              <p className="text-sm text-gray-400">{category.count} services</p>
+            </div>
           ))}
         </div>
       </div>

@@ -90,9 +90,9 @@ export default function Navbar() {
                 Login
               </Button>
               <Button
-                size="sm"
+                size="lg"
                 onClick={() => navigate('/register')}
-                className={`rounded-full px-6 font-semibold ${isScrolled || !isLandingPage ? '' : 'bg-white text-primary hover:bg-white/90'}`}
+                className={`rounded-full px-8 h-12 text-base font-semibold border-2 border-primary shadow-md ${isScrolled || !isLandingPage ? '' : 'bg-white text-primary hover:bg-white/90'}`}
               >
                 Get Started
               </Button>

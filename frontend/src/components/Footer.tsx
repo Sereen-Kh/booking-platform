@@ -16,19 +16,21 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer id="about" className="bg-foreground text-background pt-16 pb-8">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
-          {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
-            <a href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-lg gradient-hero flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-primary-foreground" />
+    <footer id="about" className="bg-[#1A1D1F] text-white pt-16 md:pt-20 pb-8">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 md:gap-12 mb-12 md:mb-16">
+          {/* Brand Column - Takes 2 columns on desktop */}
+          <div className="col-span-2">
+            <a href="/" className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-xl">BookFlow</span>
+              <span className="font-bold text-xl text-white">BookFlow</span>
             </a>
-            <p className="text-background/70 text-sm mb-4">
-              The easiest way to book services online. Trusted by millions worldwide.
+            <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-xs">
+              The easiest way to book services online. Trusted by millions
+              worldwide.
             </p>
             <div className="flex items-center gap-3">
               {socialLinks.map((social) => (
@@ -36,24 +38,26 @@ export function Footer() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-9 h-9 rounded-lg bg-background/10 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors duration-300"
                 >
-                  <social.icon className="w-4 h-4" />
+                  <social.icon className="w-5 h-5" />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Links */}
+          {/* Links Columns */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="font-semibold mb-4">{category}</h4>
-              <ul className="space-y-2">
+              <h4 className="font-semibold text-base mb-5 text-white">
+                {category}
+              </h4>
+              <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link}>
                     <a
                       href="#"
-                      className="text-sm text-background/70 hover:text-primary transition-colors"
+                      className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
                     >
                       {link}
                     </a>
@@ -64,21 +68,21 @@ export function Footer() {
           ))}
         </div>
 
-        {/* Bottom */}
-        <div className="pt-8 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-background/60">
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-gray-500">
             © {new Date().getFullYear()} BookFlow. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <a href="#" className="text-sm text-background/60 hover:text-primary transition-colors">
-              Privacy
-            </a>
-            <a href="#" className="text-sm text-background/60 hover:text-primary transition-colors">
-              Terms
-            </a>
-            <a href="#" className="text-sm text-background/60 hover:text-primary transition-colors">
-              Cookies
-            </a>
+            {["Privacy", "Terms", "Cookies"].map((item) => (
+              <a
+                key={item}
+                href="#"
+                className="text-sm text-gray-500 hover:text-white transition-colors"
+              >
+                {item}
+              </a>
+            ))}
           </div>
         </div>
       </div>
