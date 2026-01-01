@@ -86,11 +86,11 @@ export function FeaturedServices() {
               className="group bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200 overflow-hidden"
             >
               {/* Image Container - Fixed aspect ratio for consistent proportions */}
-              <div className="relative aspect-[16/10] overflow-hidden">
+              <div className="relative w-full" style={{ paddingTop: '62.5%' }}>
                 <img
                   src={service.image}
                   alt={service.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 {/* Subtle gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
