@@ -60,106 +60,102 @@ export function FeaturedServices() {
   return (
     <section
       id="services"
-      className="py-24 md:py-32 bg-[#FDFBF7] relative overflow-hidden"
+      className="py-16 md:py-20 bg-[#FDFBF7] relative overflow-hidden"
     >
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 relative z-10">
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16 md:mb-20 animate-fade-up">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-primary text-xs font-bold tracking-wider uppercase mb-6 shadow-sm">
+        <div className="text-center mb-10 md:mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-primary text-xs font-semibold tracking-wide uppercase mb-4 shadow-sm">
             <Star className="w-3 h-3 fill-primary" />
             Curated Services
           </div>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1A1A1A] mb-4 tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-2">
             Popular Services Near You
           </h2>
-          <p className="text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm text-gray-500 max-w-lg mx-auto">
             Discover top-rated professionals ready to help with your needs.
-            Quality service, guaranteed satisfaction.
           </p>
         </div>
 
-        {/* Services Grid - 2 Columns for Large Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
+        {/* Services Grid - 2 Columns Desktop, 1 Column Mobile */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
           {services.map((service) => (
             <div
               key={service.id}
-              className="group flex flex-col h-full bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+              data-testid={`service-card-${service.id}`}
+              className="group bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200 overflow-hidden"
             >
-              {/* Image Header */}
-              <div className="relative w-full h-48 overflow-hidden">
+              {/* Image Container - Fixed aspect ratio for consistent proportions */}
+              <div className="relative aspect-[16/10] overflow-hidden">
                 <img
                   src={service.image}
                   alt={service.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" />
+                {/* Subtle gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
 
-                {/* Price Display - Top Right Overlay */}
-                <div className="absolute top-4 right-4 text-right z-20">
-                  <div className="text-2xl font-bold text-white drop-shadow-md tracking-tight">
-                    ${service.price}
-                  </div>
-                  <div className="text-white/90 text-xs font-medium drop-shadow-md">
-                    starting at
-                  </div>
+                {/* Price Badge - Top Right */}
+                <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1.5 shadow-sm">
+                  <span className="text-sm font-bold text-gray-900">${service.price}</span>
+                </div>
+
+                {/* Category Badge - Top Left */}
+                <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-full px-2.5 py-1 shadow-sm">
+                  <span className="text-xs font-medium text-gray-600">{service.category}</span>
                 </div>
               </div>
 
-              {/* Service Information */}
-              <div className="flex flex-col flex-grow p-6">
-                {/* Title and Provider */}
-                <div className="mb-4">
-                  <h3 className="font-serif text-xl font-bold text-[#1A1A1A] mb-1 group-hover:text-primary transition-colors">
+              {/* Card Content */}
+              <div className="p-4">
+                {/* Title & Provider */}
+                <div className="mb-3">
+                  <h3 className="text-base font-semibold text-gray-900 mb-0.5 group-hover:text-primary transition-colors line-clamp-1">
                     {service.title}
                   </h3>
-                  <p className="text-sm text-gray-500 font-medium">
-                    {service.provider}
+                  <p className="text-sm text-gray-500">
+                    by {service.provider}
                   </p>
                 </div>
 
-                {/* Meta Information Row */}
-                <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-                  <div className="flex items-center gap-1.5">
-                    <Star className="w-4 h-4 text-orange-400 fill-orange-400" />
-                    <span className="font-bold text-gray-900 text-sm">
-                      {service.rating}
-                    </span>
-                    <span className="text-gray-400 text-sm">
-                      ({service.reviews})
-                    </span>
+                {/* Meta Row - Rating & Duration */}
+                <div className="flex items-center gap-3 mb-3 text-sm">
+                  <div className="flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                    <span className="font-medium text-gray-900">{service.rating}</span>
+                    <span className="text-gray-400">({service.reviews})</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-gray-500">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm">{service.duration}</span>
+                  <span className="text-gray-300">•</span>
+                  <div className="flex items-center gap-1 text-gray-500">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{service.duration}</span>
                   </div>
                 </div>
 
                 {/* Location */}
-                <div className="flex items-center gap-2 text-gray-500 mb-6">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">
-                    {service.location}
-                  </span>
+                <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-4">
+                  <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                  <span className="truncate">{service.location}</span>
                 </div>
 
-                {/* Primary CTA */}
-                <div className="mt-auto">
-                  <Button className="w-full h-12 rounded-xl text-sm font-bold bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/10 transition-all duration-300">
-                    Book Now
-                  </Button>
-                </div>
+                {/* CTA Button - Anchored at bottom */}
+                <Button 
+                  data-testid={`book-service-${service.id}`}
+                  className="w-full h-10 rounded-lg text-sm font-medium bg-primary hover:bg-primary/90 text-white transition-colors"
+                >
+                  Book Now
+                </Button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Secondary CTA */}
-        <div className="text-center mt-16 md:mt-24">
+        {/* View All Button */}
+        <div className="text-center mt-10 md:mt-12">
           <Button
             variant="outline"
-            size="lg"
-            className="h-14 px-12 rounded-full border-2 border-gray-200 bg-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all font-semibold text-base tracking-wide"
+            data-testid="view-all-services"
+            className="h-10 px-6 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all text-sm font-medium"
           >
             View All Services
           </Button>
