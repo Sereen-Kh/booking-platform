@@ -1,55 +1,90 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, Mail, Lock, User, ArrowLeft, Loader2, Briefcase, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useAuth } from '@/context/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { z } from 'zod';
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Calendar,
+  Mail,
+  Lock,
+  User,
+  ArrowLeft,
+  Loader2,
+  Briefcase,
+  Users,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
 
-type UserRole = 'user' | 'provider';
+type UserRole = "customer" | "provider";
 
-const emailSchema = z.string().email('Please enter a valid email address');
-const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
-const nameSchema = z.string().min(2, 'Name must be at least 2 characters');
+const emailSchema = z.string().email("Please enter a valid email address");
+const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  .regex(/\d/, "Password must contain at least one number");
+const nameSchema = z.string().min(2, "Name must be at least 2 characters");
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('user');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string }>({});
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    fullName?: string;
+  }>({});
 
   const { login, logout, register, user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
+    // If user is already logged in, redirect based on role
     if (!loading && user) {
-      navigate('/');
+      const from =
+        location.state?.from?.pathname || getRoleBasedRedirect(user.role);
+      navigate(from, { replace: true });
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, location]);
+
+  const getRoleBasedRedirect = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "/admin/dashboard";
+      case "provider":
+        return "/provider/dashboard";
+      case "customer":
+      default:
+        return "/";
+    }
+  };
 
   const validateForm = () => {
-    const newErrors: { email?: string; password?: string; fullName?: string } = {};
+    const newErrors: { email?: string; password?: string; fullName?: string } =
+      {};
 
     const emailResult = emailSchema.safeParse(email);
     if (!emailResult.success) {
-      newErrors.email = emailResult.error.errors[0].message;
+      newErrors.email = emailResult.error.issues[0].message;
     }
 
     const passwordResult = passwordSchema.safeParse(password);
     if (!passwordResult.success) {
-      newErrors.password = passwordResult.error.errors[0].message;
+      newErrors.password = passwordResult.error.issues[0].message;
     }
 
     if (isSignUp) {
       const nameResult = nameSchema.safeParse(fullName);
       if (!nameResult.success) {
-        newErrors.fullName = nameResult.error.errors[0].message;
+        newErrors.fullName = nameResult.error.issues[0].message;
       }
     }
 
@@ -66,55 +101,42 @@ export default function Auth() {
 
     try {
       if (isSignUp) {
-        const { error } = await register(email, password, fullName, selectedRole);
-        if (error) {
-          if (error.message.includes('already registered')) {
-            toast({
-              title: 'Account exists',
-              description: 'This email is already registered. Please sign in instead.',
-              variant: 'destructive',
-            });
-          } else {
-            toast({
-              title: 'Sign up failed',
-              description: error.message,
-              variant: 'destructive',
-            });
-          }
-        } else {
-          toast({
-            title: 'Welcome to BookFlow!',
-            description: 'Your account has been created successfully.',
-          });
-        }
+        await register(fullName, email, password, selectedRole);
+        toast({
+          title: "Welcome to BookFlow!",
+          description: `Your ${selectedRole} account has been created successfully.`,
+        });
+        // No need to navigate - useEffect will handle redirect based on role
       } else {
-        const { error } = await login(email, password);
-        if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            toast({
-              title: 'Invalid credentials',
-              description: 'The email or password you entered is incorrect.',
-              variant: 'destructive',
-            });
-          } else {
-            toast({
-              title: 'Sign in failed',
-              description: error.message,
-              variant: 'destructive',
-            });
-          }
-        } else {
-          toast({
-            title: 'Welcome back!',
-            description: 'You have signed in successfully.',
-          });
-        }
+        const userData = await login(email, password);
+        toast({
+          title: "Welcome back!",
+          description: `Signed in as ${userData.role}.`,
+        });
+        // No need to navigate - useEffect will handle redirect based on role
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Authentication error:", error);
+
+      let errorTitle = isSignUp ? "Registration Failed" : "Login Failed";
+      let errorMessage = "An unexpected error occurred";
+
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.toString().includes("NetworkError")) {
+        errorTitle = "Network Error";
+        errorMessage =
+          "Unable to connect to the server. Please check your internet connection and ensure the backend server is running.";
+      } else if (error?.toString().includes("fetch")) {
+        errorTitle = "Server Connection Failed";
+        errorMessage =
+          "Cannot connect to the backend server at http://localhost:8000. Please ensure it is running.";
+      }
+
       toast({
-        title: 'Error',
-        description: 'An unexpected error occurred. Please try again.',
-        variant: 'destructive',
+        title: errorTitle,
+        description: errorMessage,
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -153,12 +175,12 @@ export default function Auth() {
 
           {/* Title */}
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            {isSignUp ? 'Create your account' : 'Welcome back'}
+            {isSignUp ? "Create your account" : "Welcome back"}
           </h1>
           <p className="text-muted-foreground mb-8">
             {isSignUp
-              ? 'Start booking services in minutes'
-              : 'Sign in to manage your bookings'}
+              ? "Start booking services in minutes"
+              : "Sign in to manage your bookings"}
           </p>
 
           {/* Form */}
@@ -179,7 +201,9 @@ export default function Auth() {
                     />
                   </div>
                   {errors.fullName && (
-                    <p className="text-sm text-destructive">{errors.fullName}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.fullName}
+                    </p>
                   )}
                 </div>
 
@@ -188,31 +212,61 @@ export default function Auth() {
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
-                      onClick={() => setSelectedRole('user')}
-                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${selectedRole === 'user'
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
-                        }`}
+                      onClick={() => setSelectedRole("customer")}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                        selectedRole === "customer"
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      }`}
                     >
-                      <Users className={`w-6 h-6 ${selectedRole === 'user' ? 'text-primary' : 'text-muted-foreground'}`} />
-                      <span className={`font-medium text-sm ${selectedRole === 'user' ? 'text-primary' : 'text-foreground'}`}>
+                      <Users
+                        className={`w-6 h-6 ${
+                          selectedRole === "customer"
+                            ? "text-primary"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+                      <span
+                        className={`font-medium text-sm ${
+                          selectedRole === "customer"
+                            ? "text-primary"
+                            : "text-foreground"
+                        }`}
+                      >
                         Book Services
                       </span>
-                      <span className="text-xs text-muted-foreground">As a customer</span>
+                      <span className="text-xs text-muted-foreground">
+                        As a customer
+                      </span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => setSelectedRole('provider')}
-                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${selectedRole === 'provider'
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
-                        }`}
+                      onClick={() => setSelectedRole("provider")}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                        selectedRole === "provider"
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      }`}
                     >
-                      <Briefcase className={`w-6 h-6 ${selectedRole === 'provider' ? 'text-primary' : 'text-muted-foreground'}`} />
-                      <span className={`font-medium text-sm ${selectedRole === 'provider' ? 'text-primary' : 'text-foreground'}`}>
+                      <Briefcase
+                        className={`w-6 h-6 ${
+                          selectedRole === "provider"
+                            ? "text-primary"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+                      <span
+                        className={`font-medium text-sm ${
+                          selectedRole === "provider"
+                            ? "text-primary"
+                            : "text-foreground"
+                        }`}
+                      >
                         Offer Services
                       </span>
-                      <span className="text-xs text-muted-foreground">As a provider</span>
+                      <span className="text-xs text-muted-foreground">
+                        As a provider
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -265,26 +319,26 @@ export default function Auth() {
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : isSignUp ? (
-                'Create Account'
+                "Create Account"
               ) : (
-                'Sign In'
+                "Sign In"
               )}
             </Button>
           </form>
 
           {/* Toggle */}
           <p className="mt-6 text-center text-muted-foreground">
-            {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+            {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               type="button"
               onClick={() => {
                 setIsSignUp(!isSignUp);
                 setErrors({});
-                setSelectedRole('user');
+                setSelectedRole("customer");
               }}
               className="font-medium text-primary hover:underline"
             >
-              {isSignUp ? 'Sign in' : 'Sign up'}
+              {isSignUp ? "Sign in" : "Sign up"}
             </button>
           </p>
         </div>
@@ -300,8 +354,8 @@ export default function Auth() {
             Book any service, anytime
           </h2>
           <p className="text-primary-foreground/80 text-lg">
-            Join thousands of customers who trust BookFlow for their service booking needs.
-            Quick, easy, and reliable.
+            Join thousands of customers who trust BookFlow for their service
+            booking needs. Quick, easy, and reliable.
           </p>
         </div>
       </div>

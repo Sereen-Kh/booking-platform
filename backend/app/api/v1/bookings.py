@@ -1,18 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from typing import List
 from datetime import timedelta
 from ...database import get_db
 from ...models.booking import Booking, BookingStatus
 from ...models.service import Service
 from ...schemas.booking import Booking as BookingSchema, BookingCreate
-from ...api.v1.auth import User # We'll need a way to get the current user
+from ...api.v1.auth import User  # We'll need a way to get the current user
 
 from ...api.deps import get_current_user
 from ...models.user import User
 
 router = APIRouter()
+
 
 @router.post("/", response_model=BookingSchema, status_code=status.HTTP_201_CREATED)
 async def create_booking(
@@ -25,11 +27,11 @@ async def create_booking(
     service = result.scalar_one_or_none()
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
-    
+
     # 2. Calculate end time
     start_time = booking_in.start_time
     end_time = start_time + timedelta(minutes=service.duration_minutes)
-    
+
     # 3. Check for conflicts
     conflict_query = select(Booking).where(
         Booking.service_id == booking_in.service_id,
@@ -39,8 +41,9 @@ async def create_booking(
     )
     conflict_result = await db.execute(conflict_query)
     if conflict_result.scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="Booking conflict: slot already taken")
-    
+        raise HTTPException(
+            status_code=409, detail="Booking conflict: slot already taken")
+
     # 4. Create booking
     db_booking = Booking(
         customer_id=current_user.id,
@@ -54,13 +57,20 @@ async def create_booking(
     await db.refresh(db_booking)
     return db_booking
 
+
 @router.get("/me", response_model=List[BookingSchema])
 async def get_my_bookings(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    result = await db.execute(select(Booking).where(Booking.customer_id == current_user.id))
+    result = await db.execute(
+        select(Booking)
+        .where(Booking.customer_id == current_user.id)
+        .options(selectinload(Booking.service))
+        .order_by(Booking.created_at.desc())
+    )
     return result.scalars().all()
+
 
 @router.get("/managed", response_model=List[BookingSchema])
 async def get_provider_bookings(
@@ -71,16 +81,18 @@ async def get_provider_bookings(
     Get bookings for services owned by the current provider.
     """
     if current_user.role != "provider":
-         raise HTTPException(status_code=403, detail="Not authorized")
+        raise HTTPException(status_code=403, detail="Not authorized")
 
     # Join Booking -> Service to filter by Service.provider_id
     query = (
         select(Booking)
         .join(Booking.service)
         .where(Service.provider_id == current_user.id)
+        .options(selectinload(Booking.service))
     )
     result = await db.execute(query)
     return result.scalars().all()
+
 
 @router.get("/all", response_model=List[BookingSchema])
 async def get_all_bookings(
@@ -94,7 +106,12 @@ async def get_all_bookings(
     """
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
-        
-    query = select(Booking).offset(skip).limit(limit)
+
+    query = (
+        select(Booking)
+        .options(selectinload(Booking.service))
+        .offset(skip)
+        .limit(limit)
+    )
     result = await db.execute(query)
     return result.scalars().all()

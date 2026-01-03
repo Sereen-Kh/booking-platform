@@ -5,6 +5,7 @@ from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from ...database import get_db
 from ...models.service import Service, Category
+from ...models.review import Review
 from ...schemas.service import (
     Service as ServiceSchema,
     ServiceCreate,
@@ -19,7 +20,20 @@ router = APIRouter()
 @router.get("/categories", response_model=List[CategorySchema])
 async def list_categories(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Category))
-    return result.scalars().all()
+    categories = result.scalars().all()
+    
+    # Calculate service count for each category
+    categories_with_count = []
+    for category in categories:
+        service_count_result = await db.execute(
+            select(func.count(Service.id)).where(Service.category_id == category.id)
+        )
+        count = service_count_result.scalar()
+        category_dict = CategorySchema.model_validate(category).model_dump()
+        category_dict['service_count'] = count
+        categories_with_count.append(CategorySchema(**category_dict))
+    
+    return categories_with_count
 
 
 @router.get("/recommended", response_model=List[ServiceSchema])
@@ -33,7 +47,24 @@ async def get_recommended_services(
     query = select(Service).options(selectinload(
         Service.provider)).order_by(func.random()).limit(limit)
     result = await db.execute(query)
-    return result.scalars().all()
+    services = result.scalars().all()
+    
+    # Calculate rating and review count for each service
+    services_with_stats = []
+    for service in services:
+        review_stats = await db.execute(
+            select(
+                func.avg(Review.rating).label('avg_rating'),
+                func.count(Review.id).label('review_count')
+            ).where(Review.service_id == service.id)
+        )
+        stats = review_stats.first()
+        service_dict = ServiceSchema.model_validate(service).model_dump()
+        service_dict['rating'] = round(float(stats.avg_rating), 1) if stats.avg_rating else 0.0
+        service_dict['review_count'] = stats.review_count
+        services_with_stats.append(ServiceSchema(**service_dict))
+    
+    return services_with_stats
 
 
 @router.get("/", response_model=List[ServiceSchema])
@@ -61,7 +92,24 @@ async def list_services(
         query = query.where(Service.name.ilike(f"%{search}%"))
 
     result = await db.execute(query.offset(skip).limit(limit))
-    return result.scalars().all()
+    services = result.scalars().all()
+    
+    # Calculate rating and review count for each service
+    services_with_stats = []
+    for service in services:
+        review_stats = await db.execute(
+            select(
+                func.avg(Review.rating).label('avg_rating'),
+                func.count(Review.id).label('review_count')
+            ).where(Review.service_id == service.id)
+        )
+        stats = review_stats.first()
+        service_dict = ServiceSchema.model_validate(service).model_dump()
+        service_dict['rating'] = round(float(stats.avg_rating), 1) if stats.avg_rating else 0.0
+        service_dict['review_count'] = stats.review_count
+        services_with_stats.append(ServiceSchema(**service_dict))
+    
+    return services_with_stats
 
 
 @router.get("/provider/my-services", response_model=List[ServiceSchema])

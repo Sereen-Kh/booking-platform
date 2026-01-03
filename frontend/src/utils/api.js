@@ -21,15 +21,35 @@ async function apiRequest(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, config);
-    const data = await response.json();
+    
+    // Handle network errors or non-JSON responses
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      if (!response.ok) {
+        throw new Error(
+          `Server error (${response.status}): Unable to connect to the backend. Please ensure the server is running.`
+        );
+      }
+      throw new Error("Invalid response from server");
+    }
 
     if (!response.ok) {
-      throw new Error(data.detail || "Something went wrong");
+      // Extract error message from backend response
+      const errorMessage = data.detail || data.message || "Something went wrong";
+      throw new Error(errorMessage);
     }
 
     return data;
   } catch (error) {
     console.error("API Error:", error);
+    // Re-throw with more context if it's a network error
+    if (error.name === "TypeError" && error.message.includes("fetch")) {
+      throw new Error(
+        "Cannot connect to the server. Please ensure the backend is running on http://localhost:8000"
+      );
+    }
     throw error;
   }
 }
@@ -51,29 +71,46 @@ export const authAPI = {
 
   // Login user
   login: async (email, password) => {
-    // FastAPI OAuth2 expects form data, not JSON
-    const formData = new URLSearchParams();
-    formData.append("username", email); // Note: OAuth2 uses 'username' field
-    formData.append("password", password);
+    try {
+      // FastAPI OAuth2 expects form data, not JSON
+      const formData = new URLSearchParams();
+      formData.append("username", email); // Note: OAuth2 uses 'username' field
+      formData.append("password", password);
 
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: formData,
-    });
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData,
+      });
 
-    const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        throw new Error(
+          "Cannot connect to the server. Please ensure the backend is running."
+        );
+      }
 
-    if (!response.ok) {
-      throw new Error(data.detail || "Login failed");
+      if (!response.ok) {
+        const errorMessage = data.detail || "Login failed. Please check your credentials.";
+        throw new Error(errorMessage);
+      }
+
+      // Store token in localStorage
+      localStorage.setItem("access_token", data.access_token);
+
+      return data;
+    } catch (error) {
+      if (error.name === "TypeError" && error.message.includes("fetch")) {
+        throw new Error(
+          "Cannot connect to the server. Please ensure the backend is running on http://localhost:8000"
+        );
+      }
+      throw error;
     }
-
-    // Store token in localStorage
-    localStorage.setItem("access_token", data.access_token);
-
-    return data;
   },
 
   // Logout user

@@ -10,6 +10,8 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     description = Column(Text)
+    icon = Column(String, nullable=True)  # Icon name (e.g., 'Home', 'Scissors')
+    color = Column(String, nullable=True)  # Tailwind color classes
     
     services = relationship("Service", back_populates="category")
 
@@ -24,6 +26,7 @@ class Service(Base):
     category_id = Column(Integer, ForeignKey("categories.id"))
     provider_id = Column(Integer, ForeignKey("users.id"))
     image_url = Column(String, nullable=True)
+    location = Column(String, nullable=True)
 
     category = relationship("Category", back_populates="services")
     provider = relationship("User")
