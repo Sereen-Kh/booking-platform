@@ -29,11 +29,17 @@ const passwordSchema = z
 const nameSchema = z.string().min(2, "Name must be at least 2 characters");
 
 export default function Auth() {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const searchParams = new URLSearchParams(window.location.search);
+  const modeParam = searchParams.get("mode");
+  const roleParam = searchParams.get("role");
+
+  const [isSignUp, setIsSignUp] = useState(modeParam === "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
+  const [selectedRole, setSelectedRole] = useState<UserRole>(
+    (roleParam as UserRole) || "customer"
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{
     email?: string;

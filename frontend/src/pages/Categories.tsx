@@ -57,6 +57,7 @@ interface Category {
   description?: string;
   icon?: string;
   color?: string;
+  service_count?: number;
 }
 
 // Map category names to icons
@@ -141,7 +142,7 @@ export default function Categories() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/categories");
+      const response = await api.get("/services/categories");
       setCategories(response.data || []);
     } catch (error: any) {
       console.error("Error fetching categories:", error);
@@ -237,7 +238,9 @@ export default function Categories() {
       return providerServices.filter((s) => s.category_id === categoryId)
         .length;
     }
-    return null; // We don't have counts for general view
+    // For non-providers, use the service_count from API
+    const category = categories.find((c) => c.id === categoryId);
+    return category?.service_count || 0;
   };
 
   // Filter categories based on search
@@ -536,9 +539,17 @@ export default function Categories() {
                           <p className="text-sm text-muted-foreground">
                             {isProvider
                               ? hasProviderServices
-                                ? "Click to view your services"
+                                ? `${serviceCount} ${
+                                    serviceCount === 1 ? "service" : "services"
+                                  }`
                                 : "No services yet"
-                              : "Browse services →"}
+                              : category.service_count
+                              ? `${category.service_count} ${
+                                  category.service_count === 1
+                                    ? "service"
+                                    : "services"
+                                }`
+                              : "No services"}
                           </p>
                         </button>
                       );

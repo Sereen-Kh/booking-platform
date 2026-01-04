@@ -11,6 +11,7 @@ import Index from "./pages/index";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
+import ProviderOnboarding from "./pages/ProviderOnboarding";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import Services from "./pages/Services";
@@ -35,6 +36,10 @@ const App = () => (
                 <Route path="/services" element={<Services />} />
                 <Route path="/categories" element={<CategoriesPage />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route
+                  path="/provider/onboarding"
+                  element={<ProviderOnboarding />}
+                />
 
                 {/* Protected Routes */}
                 <Route

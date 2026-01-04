@@ -152,6 +152,9 @@ export default function ProviderDashboard() {
         navigate("/auth");
       } else if (user.role !== "provider" && user.role !== "PROVIDER") {
         navigate("/");
+      } else if (!user.is_profile_complete) {
+        // Redirect to onboarding if profile not complete
+        navigate("/provider/onboarding");
       } else {
         fetchData();
       }
@@ -189,7 +192,10 @@ export default function ProviderDashboard() {
     }
   };
 
-  const handleUpdateBookingStatus = async (bookingId: number, newStatus: string) => {
+  const handleUpdateBookingStatus = async (
+    bookingId: number,
+    newStatus: string
+  ) => {
     try {
       await api.patch(`/bookings/${bookingId}/status?status=${newStatus}`);
       toast({
@@ -201,7 +207,8 @@ export default function ProviderDashboard() {
       console.error("Error updating booking:", error);
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "Failed to update booking status.",
+        description:
+          error.response?.data?.detail || "Failed to update booking status.",
         variant: "destructive",
       });
     }
@@ -1009,7 +1016,12 @@ export default function ProviderDashboard() {
                               <>
                                 <Button
                                   size="sm"
-                                  onClick={() => handleUpdateBookingStatus(booking.id, "confirmed")}
+                                  onClick={() =>
+                                    handleUpdateBookingStatus(
+                                      booking.id,
+                                      "confirmed"
+                                    )
+                                  }
                                   className="gap-1"
                                 >
                                   <CheckCircle className="w-4 h-4" />
@@ -1018,7 +1030,12 @@ export default function ProviderDashboard() {
                                 <Button
                                   size="sm"
                                   variant="destructive"
-                                  onClick={() => handleUpdateBookingStatus(booking.id, "cancelled")}
+                                  onClick={() =>
+                                    handleUpdateBookingStatus(
+                                      booking.id,
+                                      "cancelled"
+                                    )
+                                  }
                                   className="gap-1"
                                 >
                                   <XCircle className="w-4 h-4" />
@@ -1031,7 +1048,12 @@ export default function ProviderDashboard() {
                                 <Button
                                   size="sm"
                                   variant="default"
-                                  onClick={() => handleUpdateBookingStatus(booking.id, "completed")}
+                                  onClick={() =>
+                                    handleUpdateBookingStatus(
+                                      booking.id,
+                                      "completed"
+                                    )
+                                  }
                                   className="gap-1"
                                 >
                                   <CheckCircle className="w-4 h-4" />
@@ -1040,7 +1062,12 @@ export default function ProviderDashboard() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => handleUpdateBookingStatus(booking.id, "cancelled")}
+                                  onClick={() =>
+                                    handleUpdateBookingStatus(
+                                      booking.id,
+                                      "cancelled"
+                                    )
+                                  }
                                   className="gap-1"
                                 >
                                   <XCircle className="w-4 h-4" />
@@ -1048,9 +1075,11 @@ export default function ProviderDashboard() {
                                 </Button>
                               </>
                             )}
-                            {(booking.status === "COMPLETED" || booking.status === "CANCELLED") && (
+                            {(booking.status === "COMPLETED" ||
+                              booking.status === "CANCELLED") && (
                               <p className="text-sm text-muted-foreground italic">
-                                No actions available for {booking.status.toLowerCase()} bookings
+                                No actions available for{" "}
+                                {booking.status.toLowerCase()} bookings
                               </p>
                             )}
                           </div>
