@@ -170,7 +170,7 @@ export default function Cart() {
             `${item.selectedDate}T${item.selectedTime}:00`
           );
 
-          const response = await api.post("/bookings", {
+          const response = await api.post("/bookings/", {
             service_id: item.serviceId,
             start_time: startTime.toISOString(),
             notes: item.notes || null,
