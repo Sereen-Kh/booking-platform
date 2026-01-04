@@ -62,6 +62,8 @@ export default function Auth() {
       case "provider":
         return "/provider/dashboard";
       case "customer":
+      case "user":
+        return "/customer/dashboard";
       default:
         return "/";
     }

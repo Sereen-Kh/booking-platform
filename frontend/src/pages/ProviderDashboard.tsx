@@ -24,6 +24,8 @@ import {
   Filter,
   RefreshCw,
 } from "lucide-react";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -184,6 +186,24 @@ export default function ProviderDashboard() {
     } catch (error: any) {
       console.error("Error fetching bookings:", error);
       setBookings([]);
+    }
+  };
+
+  const handleUpdateBookingStatus = async (bookingId: number, newStatus: string) => {
+    try {
+      await api.patch(`/bookings/${bookingId}/status?status=${newStatus}`);
+      toast({
+        title: "Booking Updated",
+        description: `Booking has been ${newStatus.toLowerCase()}.`,
+      });
+      fetchBookings();
+    } catch (error: any) {
+      console.error("Error updating booking:", error);
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to update booking status.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -401,9 +421,11 @@ export default function ProviderDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-50">
+    <div className="min-h-screen flex flex-col bg-background">
+      <Header />
+
+      {/* Dashboard Header */}
+      <div className="border-b bg-card mt-16">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -421,21 +443,9 @@ export default function ProviderDashboard() {
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/profile")}
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Profile
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate("/")}>
-              <Home className="w-4 h-4 mr-2" />
-              View Site
-            </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
@@ -991,6 +1001,59 @@ export default function ProviderDashboard() {
                               </div>
                             </>
                           )}
+
+                          {/* Action Buttons */}
+                          <Separator />
+                          <div className="flex flex-wrap gap-2 pt-2">
+                            {booking.status === "PENDING" && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleUpdateBookingStatus(booking.id, "confirmed")}
+                                  className="gap-1"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                  Confirm
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => handleUpdateBookingStatus(booking.id, "cancelled")}
+                                  className="gap-1"
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                  Decline
+                                </Button>
+                              </>
+                            )}
+                            {booking.status === "CONFIRMED" && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  onClick={() => handleUpdateBookingStatus(booking.id, "completed")}
+                                  className="gap-1"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                  Mark Complete
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleUpdateBookingStatus(booking.id, "cancelled")}
+                                  className="gap-1"
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                  Cancel
+                                </Button>
+                              </>
+                            )}
+                            {(booking.status === "COMPLETED" || booking.status === "CANCELLED") && (
+                              <p className="text-sm text-muted-foreground italic">
+                                No actions available for {booking.status.toLowerCase()} bookings
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -1186,6 +1249,7 @@ export default function ProviderDashboard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <Footer />
     </div>
   );
 }

@@ -115,3 +115,91 @@ async def get_all_bookings(
     )
     result = await db.execute(query)
     return result.scalars().all()
+
+
+@router.patch("/{booking_id}/status", response_model=BookingSchema)
+async def update_booking_status(
+    booking_id: int,
+    status: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Update booking status. Providers can confirm/complete bookings for their services.
+    Customers can cancel their own pending bookings.
+    Admins can update any booking status.
+    """
+    # Fetch booking with service info
+    result = await db.execute(
+        select(Booking)
+        .options(selectinload(Booking.service))
+        .where(Booking.id == booking_id)
+    )
+    booking = result.scalar_one_or_none()
+
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    # Authorization check
+    is_customer = booking.customer_id == current_user.id
+    is_provider = booking.service and booking.service.provider_id == current_user.id
+    is_admin = current_user.role == "admin"
+
+    if not (is_customer or is_provider or is_admin):
+        raise HTTPException(
+            status_code=403, detail="Not authorized to update this booking")
+
+    # Validate status transitions
+    valid_statuses = ["pending", "confirmed", "completed", "cancelled"]
+    status_lower = status.lower()
+
+    if status_lower not in valid_statuses:
+        raise HTTPException(
+            status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+
+    # Customers can only cancel their pending bookings
+    if is_customer and not is_admin:
+        if status_lower != "cancelled":
+            raise HTTPException(
+                status_code=403, detail="Customers can only cancel bookings")
+        if booking.status != BookingStatus.PENDING:
+            raise HTTPException(
+                status_code=400, detail="Can only cancel pending bookings")
+
+    # Update status
+    booking.status = BookingStatus(status_lower)
+    await db.commit()
+    await db.refresh(booking)
+
+    return booking
+
+
+@router.get("/{booking_id}", response_model=BookingSchema)
+async def get_booking(
+    booking_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get a specific booking by ID.
+    """
+    result = await db.execute(
+        select(Booking)
+        .options(selectinload(Booking.service))
+        .where(Booking.id == booking_id)
+    )
+    booking = result.scalar_one_or_none()
+
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    # Authorization check
+    is_customer = booking.customer_id == current_user.id
+    is_provider = booking.service and booking.service.provider_id == current_user.id
+    is_admin = current_user.role == "admin"
+
+    if not (is_customer or is_provider or is_admin):
+        raise HTTPException(
+            status_code=403, detail="Not authorized to view this booking")
+
+    return booking

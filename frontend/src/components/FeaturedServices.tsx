@@ -1,5 +1,6 @@
 import { Star, Clock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const services = [
   {
@@ -77,6 +78,8 @@ const services = [
 ];
 
 export function FeaturedServices() {
+  const navigate = useNavigate();
+
   return (
     <section id="services" className="py-20 bg-secondary/30">
       <div className="container mx-auto px-4">
@@ -145,7 +148,7 @@ export function FeaturedServices() {
                   <span>{service.location}</span>
                 </div>
 
-                <Button variant="default" className="w-full">
+                <Button variant="default" className="w-full" onClick={() => navigate("/services")}>
                   Book Now
                 </Button>
               </div>
@@ -155,7 +158,7 @@ export function FeaturedServices() {
 
         {/* View All Button */}
         <div className="text-center mt-10">
-          <Button variant="outline-hero" size="lg">
+          <Button variant="outline-hero" size="lg" onClick={() => navigate("/services")}>
             View All Services
           </Button>
         </div>
