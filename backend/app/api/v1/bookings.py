@@ -55,7 +55,15 @@ async def create_booking(
     db.add(db_booking)
     await db.commit()
     await db.refresh(db_booking)
-    return db_booking
+
+    # Eagerly load the service relationship to avoid lazy loading issues
+    result = await db.execute(
+        select(Booking)
+        .where(Booking.id == db_booking.id)
+        .options(selectinload(Booking.service))
+    )
+    booking_with_service = result.scalar_one()
+    return booking_with_service
 
 
 @router.get("/me", response_model=List[BookingSchema])

@@ -190,10 +190,10 @@ export default function Services() {
       image_url: service.image_url,
       provider: service.provider
         ? {
-            id: service.provider_id,
-            full_name: service.provider.full_name,
-            email: service.provider.email,
-          }
+          id: service.provider_id,
+          full_name: service.provider.full_name,
+          email: service.provider.email,
+        }
         : undefined,
     });
 
@@ -357,8 +357,8 @@ export default function Services() {
                   {isProvider
                     ? "Create your first service to start receiving bookings"
                     : searchQuery
-                    ? `No services match "${searchQuery}"`
-                    : "No services available at the moment"}
+                      ? `No services match "${searchQuery}"`
+                      : "No services available at the moment"}
                 </p>
                 {isProvider ? (
                   <Button
@@ -455,8 +455,7 @@ export default function Services() {
                                 </>
                               ) : (
                                 <>
-                                  <ShoppingCart className="w-4 h-4 mr-1" /> Add
-                                  to Cart
+                                  <ShoppingCart className="w-4 h-4 mr-1" /> Book Now
                                 </>
                               )}
                             </Button>
@@ -544,8 +543,7 @@ export default function Services() {
                                   </>
                                 ) : (
                                   <>
-                                    <ShoppingCart className="w-4 h-4 mr-2" />{" "}
-                                    Add to Cart
+                                    <ShoppingCart className="w-4 h-4 mr-2" /> Book Now
                                   </>
                                 )}
                               </Button>

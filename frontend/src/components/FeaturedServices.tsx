@@ -1,6 +1,9 @@
-import { Star, Clock, MapPin } from "lucide-react";
+import { Star, Clock, MapPin, ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "@/context/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 const services = [
   {
@@ -79,6 +82,51 @@ const services = [
 
 export function FeaturedServices() {
   const navigate = useNavigate();
+  const { addToCart, isInCart } = useCart();
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  const handleAddToCart = (service: any) => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to book services",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    if (isInCart(service.id)) {
+      toast({
+        title: "Already in cart",
+        description: `${service.title} is already in your cart`,
+      });
+      return;
+    }
+
+    addToCart({
+      serviceId: service.id,
+      name: service.title,
+      description: service.category,
+      price: service.price,
+      duration_minutes: 60, // Default for featured
+      image_url: service.image,
+      provider: {
+        id: 0,
+        full_name: service.provider,
+        email: "",
+      },
+    });
+
+    toast({
+      title: "Added to cart!",
+      description: `${service.title} has been added to your cart`,
+    });
+  };
+
+  const handleGoToCart = () => {
+    navigate("/cart");
+  };
 
   return (
     <section id="services" className="py-20 bg-secondary/30">
@@ -148,8 +196,20 @@ export function FeaturedServices() {
                   <span>{service.location}</span>
                 </div>
 
-                <Button variant="default" className="w-full" onClick={() => navigate("/services")}>
-                  Book Now
+                <Button
+                  variant={isInCart(service.id) ? "outline" : "default"}
+                  className="w-full"
+                  onClick={() => isInCart(service.id) ? handleGoToCart() : handleAddToCart(service)}
+                >
+                  {isInCart(service.id) ? (
+                    <>
+                      <Check className="w-4 h-4 mr-2" /> In Cart
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-4 h-4 mr-2" /> Book Now
+                    </>
+                  )}
                 </Button>
               </div>
             </article>

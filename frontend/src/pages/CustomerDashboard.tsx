@@ -13,6 +13,8 @@ import {
   Loader2,
   Eye,
   Search,
+  ShoppingCart,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +37,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/context/CartContext";
 
 interface Booking {
   id: number;
@@ -155,6 +158,43 @@ export default function CustomerDashboard() {
     } finally {
       setLoadingServices(false);
     }
+  };
+
+  const { addToCart, isInCart } = useCart();
+
+  const handleAddToCart = (service: Service) => {
+    if (isInCart(service.id)) {
+      toast({
+        title: "Already in cart",
+        description: `${service.name} is already in your cart`,
+      });
+      return;
+    }
+
+    addToCart({
+      serviceId: service.id,
+      name: service.name,
+      description: service.description,
+      price: service.price,
+      duration_minutes: service.duration || 60,
+      image_url: service.image_url,
+      provider: service.provider
+        ? {
+          id: service.provider_id,
+          full_name: service.provider.full_name,
+          email: "", // Default to empty if not available in this view
+        }
+        : undefined,
+    });
+
+    toast({
+      title: "Added to cart!",
+      description: `${service.name} has been added to your cart`,
+    });
+  };
+
+  const handleGoToCart = () => {
+    navigate("/cart");
   };
 
   const getStatusBadge = (status: string) => {
@@ -407,8 +447,8 @@ export default function CustomerDashboard() {
                                   Details
                                 </Button>
                                 {booking.status.toLowerCase() === "pending" && (
-                                  <Button 
-                                    variant="ghost" 
+                                  <Button
+                                    variant="ghost"
                                     size="sm"
                                     className="text-destructive hover:text-destructive"
                                     onClick={() => handleCancelBooking(booking.id)}
@@ -503,8 +543,20 @@ export default function CustomerDashboard() {
                                 <span className="text-lg font-bold text-primary">
                                   ${service.price.toFixed(2)}
                                 </span>
-                                <Button size="sm" variant="hero">
-                                  Book Now
+                                <Button
+                                  size="sm"
+                                  variant={isInCart(service.id) ? "outline" : "hero"}
+                                  onClick={() => isInCart(service.id) ? handleGoToCart() : handleAddToCart(service)}
+                                >
+                                  {isInCart(service.id) ? (
+                                    <>
+                                      <Check className="w-4 h-4 mr-2" /> In Cart
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ShoppingCart className="w-4 h-4 mr-2" /> Book Now
+                                    </>
+                                  )}
                                 </Button>
                               </div>
                             </div>
